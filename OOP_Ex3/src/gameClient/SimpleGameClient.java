@@ -12,6 +12,7 @@ import Server.game_service;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
 import dataStructure.graph;
+
 /**
  * This class represents a simple example for using the GameServer API:
  * the main file performs the following tasks:
@@ -19,19 +20,20 @@ import dataStructure.graph;
  * 2. Constructs the graph from JSON String (lines 37-39)
  * 3. Gets the scenario JSON String (lines 40-41)
  * 4. Prints the fruits data (lines 44-45)
- * 5. Add a single robot (line 48) // note: in genera a list of robots should be added
+ * 5. Add a single robot (line 48) // note: in general a list of robots should be added
  * 6. Starts game (line 49)
  * 7. Main loop (should be a thread)
  * 8. move the robot along the current edge (line 54)
  * 9. direct to the next edge (if on a node) (line 68)
  *  
- * @author boaz.benmoshe
- *
+ * @author YosefTwito and EldarTakach
  */
 public class SimpleGameClient {
+	
 	public static void main(String[] a) {
 		test1();
 	}
+	
 	public static void test1() {
 		game_service game = Game_Server.getServer(2); // you have [0,23] games
 		String g = game.getGraph();
@@ -50,7 +52,7 @@ public class SimpleGameClient {
 		int i=0;
 		while(game.isRunning()) {
 			long t = game.timeToEnd();
-			//System.out.println("roung: "+i+"  seconds to end:"+(t/1000));
+			//System.out.println("round: "+i+"  seconds to end:"+(t/1000));
 			List<String> log = game.move();
 			if(log!=null) {
 				String robot_json = log.get(0);
@@ -79,6 +81,7 @@ public class SimpleGameClient {
 			i++;
 		}
 	}
+	
 	/**
 	 * a very simple random walk implementation!
 	 * @param g
