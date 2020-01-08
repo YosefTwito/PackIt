@@ -43,15 +43,19 @@ public class SimpleGameClient {
 	}
 	
 	public static void test1() {
-		game_service game = Game_Server.getServer(2); // you have [0,23] games
+		game_service game = Game_Server.getServer(4); // you have [0,23] games
 		String g = game.getGraph();
+		String info = game.toString();
+		System.out.println(game.getGraph());
+		System.out.println(info);
 		DGraph gg = new DGraph();
 		gg.init(g);
-		String info = game.toString();
+		
 		System.out.println(game.getFruits());
 		System.out.println(game.getRobots());
-		System.out.println(info);
+		
 		System.out.println(g);
+		
 		// the list of fruits should be considered in your solution
 		Iterator<String> f_iter = game.getFruits().iterator();
 		while(f_iter.hasNext()) {System.out.println(f_iter.next());}

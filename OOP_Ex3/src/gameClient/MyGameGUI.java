@@ -30,10 +30,7 @@ public class MyGameGUI {
 	static graph graph;
 	ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
 	ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
-	double minx=Integer.MAX_VALUE;
-	double maxx=Integer.MIN_VALUE;
-	double miny=Integer.MAX_VALUE;
-	double maxy=Integer.MIN_VALUE;
+
 
 
 	public static void main(String[] args) {
@@ -71,8 +68,13 @@ public class MyGameGUI {
 				int rid = ttt.getInt("id");
 				int src = ttt.getInt("src");
 				int dest = ttt.getInt("dest");
-				Robot x = new Robot(rid,src,dest);
-				robo_list.add(x);
+				int x = ttt.getInt("pos"); // TODO parse the json string and get all robots.
+				int y = ttt.getInt("pos");
+				int z = ttt.getInt("pos");
+				Point3D p = new Point3D(x,y,z);
+				double val = ttt.getDouble("value");
+				Robot r = new Robot(rid,src,dest,p,val);
+				robo_list.add(r);
 				if(dest==-1) {	
 					dest = nextNode(graph, src);
 					g.chooseNextEdge(rid, dest);
@@ -101,7 +103,7 @@ public class MyGameGUI {
 				double value = t.getDouble("value");
 				int type = t.getInt("type");
 				int x = t.getInt("pos"); // TODO iterate thro the json array and fetch the x,y,z respectively.
-				int y = t.getInt("pos");
+				int y = t.getInt("pos"); // prase through json string and get all fruits.
 				int z = t.getInt("pos");
 				Point3D p = new Point3D(x,y,z);
 				Fruit f = new Fruit(value,type,p);
