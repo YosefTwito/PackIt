@@ -34,12 +34,22 @@ public class SimpleGameClient {
 		test1();
 	}
 	
+	public static void testing() { // this is eldar's testing method.
+		game_service game = Game_Server.getServer(2);
+		game.addRobot(0);
+		game.addRobot(2);
+		
+		
+	}
+	
 	public static void test1() {
 		game_service game = Game_Server.getServer(2); // you have [0,23] games
 		String g = game.getGraph();
 		DGraph gg = new DGraph();
 		gg.init(g);
 		String info = game.toString();
+		System.out.println(game.getFruits());
+		System.out.println(game.getRobots());
 		System.out.println(info);
 		System.out.println(g);
 		// the list of fruits should be considered in your solution
