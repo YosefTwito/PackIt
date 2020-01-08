@@ -63,6 +63,7 @@ public class MyGameGUI {
 			JSONObject line;
 			
 			try {
+				//need to do loop
 				line = new JSONObject(robot_json);
 				JSONObject ttt = line.getJSONObject("Robot");
 				int rid = ttt.getInt("id");
