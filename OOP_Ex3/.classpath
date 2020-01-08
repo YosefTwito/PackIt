@@ -8,5 +8,6 @@
 	</classpathentry>
 	<classpathentry kind="lib" path="GameServer_v0.21.jar"/>
 	<classpathentry kind="lib" path="java-json.jar"/>
+	<classpathentry kind="src" path="/TheMazeOfWaze"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
