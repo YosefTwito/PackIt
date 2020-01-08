@@ -1,16 +1,35 @@
 package gameClient;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import Server.Game_Server;
+import Server.game_service;
 import dataStructure.graph;
 import dataStructure.node_data;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
-
+import gui.*;
 import utils.Point3D;
 
+/**
+ * this class represents the gui's game.
+ * we need to fetch the amount of robots and fruits and put them on our gui.
+ * than we need to implement the game as expected.
+ * one implementation is an auto-play with directed scenario according to the files.
+ * another is manual-play where we decide where to point the robot.
+ * @author Eldar and Yossi
+ *
+ */
 public class MyGameGUI {
-	graph graph;
+	static graph graph;
+	ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
+	ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 	double minx=Integer.MAX_VALUE;
 	double maxx=Integer.MIN_VALUE;
 	double miny=Integer.MAX_VALUE;
@@ -18,9 +37,17 @@ public class MyGameGUI {
 
 
 	public static void main(String[] args) {
-		graph x = new DGraph();
-		MyGameGUI n = new MyGameGUI(x);
-		n.initGUI();
+		game_service game = Game_Server.getServer(2); // this is where we get the user input too know what game to play [0,23];
+		String g = game.getGraph(); // graph as string.
+		DGraph gg = new DGraph();
+		gg.init(g); // TODO init from json string to DGraph in DGraph!!!
+		//we have the graph. now we need to get the robots and fruits.
+		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
+		//after that, we need to update our GUI with new parameters and present it.
+		
+		
+	
+		
 		
 		
 	}
@@ -30,46 +57,75 @@ public class MyGameGUI {
 	public MyGameGUI() {
 		graph=null;
 	}
-	
-	private void initGUI() {
-		StdDraw.setCanvasSize(1240, 860);
-		StdDraw.setPenColor();
+	//takes the json of a robot and make an object out of it.
+	public void fetchRobots(game_service g) {
 		
-		System.out.println(StdDraw.isMousePressed());
-		
-		
-	/*	if(graph != null)
-		{
-			Collection<node_data> nd = graph.getV();
-			for (node_data node_data : nd) {
-				Point3D s = node_data.getLocation();
-				if(s.ix() < minx)
-				{
-					minx = s.ix();
+		List<String> log = g.getRobots();
+		if(log!=null) {
+			String robot_json = log.get(0);
+			JSONObject line;
+			
+			try {
+				line = new JSONObject(robot_json);
+				JSONObject ttt = line.getJSONObject("Robot");
+				int rid = ttt.getInt("id");
+				int src = ttt.getInt("src");
+				int dest = ttt.getInt("dest");
+				Robot x = new Robot(rid,src,dest);
+				robo_list.add(x);
+				if(dest==-1) {	
+					dest = nextNode(graph, src);
+					g.chooseNextEdge(rid, dest);
+					System.out.println("Turn to node: "+dest);
+					System.out.println(ttt);
 				}
-				if(s.ix() > maxx)
-				{
-					maxx = s.ix();
-				}
-				if(s.iy() > maxy)
-				{
-					maxy = s.iy();
-				}
-				if(s.iy() < miny)
-				{
-					miny = s.iy();
-				}
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
-			StdDraw.setXscale(minx-(minx/10), maxx+(maxx/10));
-			StdDraw.setYscale(miny-(miny/10),maxy+(maxy/10));
-			//StdDraw.setG_GUI(this);
-			//repaint();
 		
-		}*/
+		
 	}
-	public void mouseClicked(MouseEvent e) {
-		System.out.println("mouseClicked");
 		
+	
+}
+	void fetchFruits(game_service g) {
+		List<String> log = g.getFruits();
+		if(log!=null) {
+			String fru_json = log.get(0);
+			JSONObject line;
+			
+			try {
+				line = new JSONObject(fru_json);
+				JSONObject t = line.getJSONObject("Fruit");
+				double value = t.getDouble("value");
+				int type = t.getInt("type");
+				int x = t.getInt("pos"); // TODO iterate thro the json array and fetch the x,y,z respectively.
+				int y = t.getInt("pos");
+				int z = t.getInt("pos");
+				Point3D p = new Point3D(x,y,z);
+				Fruit f = new Fruit(value,type,p);
+				fru_list.add(f);
+				
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		}
+	}
+	
+	
+	private static int nextNode(graph g, int src) {
+		int ans = -1;
+		Collection<edge_data> ee = g.getE(src);
+		Iterator<edge_data> itr = ee.iterator();
+		int s = ee.size();
+		int r = (int)(Math.random()*s);
+		int i=0;
+		while(i<r) {itr.next();i++;}
+		ans = itr.next().getDest();
+		return ans;
 	}
 }
 	
