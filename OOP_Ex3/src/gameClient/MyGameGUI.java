@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -54,34 +55,33 @@ public class MyGameGUI {
 	public MyGameGUI() {
 		graph=null;
 	}
-	//takes the json of a robot and make an object out of it.
+	
 	public void fetchRobots(game_service g) {
 		
 		List<String> log = g.getRobots();
 		if(log!=null) {
-			String robot_json = log.get(0);
-			JSONObject line;
+			String robot_json = log.toString();
+			
 			
 			try {
-				//need to do loop
-				line = new JSONObject(robot_json);
-				JSONObject ttt = line.getJSONObject("Robot");
-				int rid = ttt.getInt("id");
-				int src = ttt.getInt("src");
-				int dest = ttt.getInt("dest");
-				int x = ttt.getInt("pos"); // TODO parse the json string and get all robots.
-				int y = ttt.getInt("pos");
-				int z = ttt.getInt("pos");
-				Point3D p = new Point3D(x,y,z);
-				double val = ttt.getDouble("value");
-				Robot r = new Robot(rid,src,dest,p,val);
-				robo_list.add(r);
-				if(dest==-1) {	
-					dest = nextNode(graph, src);
-					g.chooseNextEdge(rid, dest);
-					System.out.println("Turn to node: "+dest);
-					System.out.println(ttt);
+				JSONObject line= new JSONObject(robot_json);
+				JSONArray jrobots= line.getJSONArray("Robot");
+				for(int i=0; i< jrobots.length();i++) {
+					JSONObject rob = jrobots.getJSONObject(i);
+					String loc = rob.getString("pos");
+					String[] xyz = loc.split(",");
+					double x = Double.parseDouble(xyz[0]);
+					double y = Double.parseDouble(xyz[1]);	
+					double z = Double.parseDouble(xyz[2]);
+					Point3D p = new Point3D(x,y,z);
+					int rid = rob.getInt("id");
+					int src = rob.getInt("src");
+					int dest = rob.getInt("dest");
+					double val = rob.getDouble("value");
+					Robot r = new Robot(rid,src,dest,p,val);
+					robo_list.add(r);
 				}
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -95,21 +95,28 @@ public class MyGameGUI {
 	void fetchFruits(game_service g) {
 		List<String> log = g.getFruits();
 		if(log!=null) {
-			String fru_json = log.get(0);
+			String fru_json = log.toString();
 			JSONObject line;
+			
 			
 			try {
 				line = new JSONObject(fru_json);
-				JSONObject t = line.getJSONObject("Fruit");
-				double value = t.getDouble("value");
-				int type = t.getInt("type");
-				int x = t.getInt("pos"); // TODO iterate thro the json array and fetch the x,y,z respectively.
-				int y = t.getInt("pos"); // prase through json string and get all fruits.
-				int z = t.getInt("pos");
-				Point3D p = new Point3D(x,y,z);
-				Fruit f = new Fruit(value,type,p);
-				fru_list.add(f);
+				JSONArray Jfruits = line.getJSONArray("Fruit");
 				
+				for(int i =0; i<Jfruits.length();i++) {
+					JSONObject fru = Jfruits.getJSONObject(i);
+					String loc = fru.getString("pos");
+					String[] xyz = loc.split(",");
+					double x = Double.parseDouble(xyz[0]);
+					double y = Double.parseDouble(xyz[1]);
+					double z = Double.parseDouble(xyz[2]);
+					Point3D p = new Point3D(x,y,z);
+					double value = fru.getDouble("value");
+					int type = fru.getInt("type");
+					Fruit f = new Fruit(value,type,p);
+					fru_list.add(f);
+				}
+
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -118,7 +125,7 @@ public class MyGameGUI {
 		}
 	}
 	
-	
+	/* TO BE USED LATER
 	private static int nextNode(graph g, int src) {
 		int ans = -1;
 		Collection<edge_data> ee = g.getE(src);
@@ -130,6 +137,7 @@ public class MyGameGUI {
 		ans = itr.next().getDest();
 		return ans;
 	}
+	*/
 }
 	
 	
