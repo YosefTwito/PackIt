@@ -4,7 +4,7 @@ import utils.Point3D;
 
 /**
  * this class represtents a fruit.
- * can be a banana or apple(-1bananan,1-apple).
+ * can be a banana or apple(-1 = banana, 1 = apple).
  * we need to read data from json file and fetch it to the fruit.
  * such:
  * where he is, his points, and the fruit itself.

@@ -9,12 +9,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import Server.Game_Server;
-import Server.game_service;
-import dataStructure.graph;
-import dataStructure.node_data;
-import dataStructure.DGraph;
-import dataStructure.edge_data;
+import Server.*;
+import dataStructure.*;
 import gui.*;
 import utils.Point3D;
 
