@@ -36,6 +36,10 @@ public class node implements node_data,Serializable {
 		this.info=o.info;
 		this.location=o.location;
 	}
+	public node (int id,Point3D loc) {
+		this.key=id;
+		this.location=loc;
+	}
 
 	public node (Point3D loc) {
 		this.key=keyMaker;
