@@ -5,7 +5,11 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import gui.GraphListener;
+import utils.Point3D;
 
 public class DGraph implements graph,Serializable{
 
@@ -24,6 +28,40 @@ public class DGraph implements graph,Serializable{
 		this.edgesMap = new HashMap<Integer, HashMap<Integer,edge_data>>();
 		this.edgesCounter=0;
 		this.MC=0;
+	}
+	public void init(String g) {
+		//JSONParser parser = new JSONParser();
+
+		try {
+			JSONObject jobj = new JSONObject(g);
+			JSONArray Jedges = jobj.getJSONArray("Edges");
+			JSONArray Jnodes = jobj.getJSONArray("Nodes");
+			
+
+			for (int i = 0; i < Jnodes.length(); i++) {
+				JSONObject nody= (JSONObject) Jnodes.get(i);
+				String location = (String) nody.getString("pos");
+				String[] points = location.split(",");
+				double x = Double.parseDouble(points[0]);
+				double y = Double.parseDouble(points[1]);	
+				double z = Double.parseDouble(points[2]);
+				int id = nody.getInt("id");
+				Point3D p = new Point3D(x,y,z);
+				node_data n = new node(id, p);
+				this.addNode(n);
+			}
+			for (int i = 0; i < Jedges.length(); i++) {
+				JSONObject edgeE= (JSONObject) Jedges.get(i);
+				int src = edgeE.getInt("src");
+				int dest = edgeE.getInt("dest");
+				double weight = edgeE.getDouble("w");
+				this.connect(src, dest, weight);
+			}
+		}
+		catch (Exception e) {
+			//e.printStackTrace();
+			System.out.println("catch");
+		} 
 	}
 	
 	public void addListener(GraphListener listener){
