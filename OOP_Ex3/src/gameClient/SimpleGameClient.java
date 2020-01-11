@@ -50,9 +50,11 @@ public class SimpleGameClient {
 		System.out.println(info);
 		DGraph gg = new DGraph();
 		gg.init(g);
-		
+		game.addRobot(0);
+		game.addRobot(1);
 		System.out.println(game.getFruits());
 		System.out.println(game.getRobots());
+
 		
 		System.out.println(g);
 		

@@ -24,6 +24,7 @@ import utils.Point3D;
  *
  */
 public class MyGameGUI {
+	game_service game;
 	static graph graph;
 	ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
 	ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
@@ -31,13 +32,18 @@ public class MyGameGUI {
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(2); // this is where we get the user input too know what game to play [0,23];
+		game_service game = Game_Server.getServer(4); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
 		DGraph gg = new DGraph();
+		game.addRobot(1);
 		gg.init(g); // TODO init from json string to DGraph in DGraph!!!
 		//we have the graph. now we need to get the robots and fruits.
 		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
 		//after that, we need to update our GUI with new parameters and present it.
+		MyGameGUI myg = new MyGameGUI(gg,game);
+		//GarphGui gui = new GraphGui(myg); // YOSSI TA'ASE INIT LEZE <3
+		
+		
 		
 		
 	
@@ -45,37 +51,44 @@ public class MyGameGUI {
 		
 		
 	}
-	public MyGameGUI(graph g) {
+	public MyGameGUI(graph g,game_service game) {
 		graph=g;
+		this.game=game;
+		fetchRobots(game);
+		fetchFruits(game);
 	}
 	public MyGameGUI() {
 		graph=null;
+		this.game=null;
 	}
 	
-	public void fetchRobots(game_service g) {
+	private void fetchRobots(game_service g) {
 		
 		List<String> log = g.getRobots();
 		if(log!=null) {
 			String robot_json = log.toString();
-			
-			
+
 			try {
-				JSONObject line= new JSONObject(robot_json);
-				JSONArray jrobots= line.getJSONArray("Robot");
-				for(int i=0; i< jrobots.length();i++) {
-					JSONObject rob = jrobots.getJSONObject(i);
-					String loc = rob.getString("pos");
+				JSONArray line= new JSONArray(robot_json);
+				
+				for(int i=0; i< line.length();i++) {
+					
+					JSONObject j= line.getJSONObject(i);
+					JSONObject jrobots = j.getJSONObject("Robot");
+					String loc = jrobots.getString("pos");
 					String[] xyz = loc.split(",");
 					double x = Double.parseDouble(xyz[0]);
 					double y = Double.parseDouble(xyz[1]);	
 					double z = Double.parseDouble(xyz[2]);
 					Point3D p = new Point3D(x,y,z);
-					int rid = rob.getInt("id");
-					int src = rob.getInt("src");
-					int dest = rob.getInt("dest");
-					double val = rob.getDouble("value");
+					int rid = jrobots.getInt("id");
+					int src = jrobots.getInt("src");
+					int dest = jrobots.getInt("dest");
+					double val = jrobots.getDouble("value");
 					Robot r = new Robot(rid,src,dest,p,val);
 					robo_list.add(r);
+					
+					
 				}
 
 			} catch (JSONException e) {
@@ -88,19 +101,18 @@ public class MyGameGUI {
 		
 	
 }
-	void fetchFruits(game_service g) {
+	private void fetchFruits(game_service g) {
 		List<String> log = g.getFruits();
 		if(log!=null) {
 			String fru_json = log.toString();
-			JSONObject line;
-			
-			
+
 			try {
-				line = new JSONObject(fru_json);
-				JSONArray Jfruits = line.getJSONArray("Fruit");
+				JSONArray line= new JSONArray(fru_json);
 				
-				for(int i =0; i<Jfruits.length();i++) {
-					JSONObject fru = Jfruits.getJSONObject(i);
+				
+				for(int i =0; i<line.length();i++) {
+					JSONObject j = line.getJSONObject(i);
+					JSONObject fru = j.getJSONObject("Fruit");
 					String loc = fru.getString("pos");
 					String[] xyz = loc.split(",");
 					double x = Double.parseDouble(xyz[0]);
@@ -134,6 +146,45 @@ public class MyGameGUI {
 		return ans;
 	}
 	*/
+	
+	private static int nextNodeManual(graph g, int src,int dest) {
+		if(graph.getNode(dest)==null) return -1;
+		int ans = -1;
+		Collection<edge_data> ee = g.getE(src);
+		for(edge_data e:ee) {
+			if(e==null) return -1;
+			if(e.getDest()==graph.getNode(dest).getKey()) return 1;
+		}
+		return ans;
+	
+	}
+	
+	private long timeToEnd() {
+		return this.game.timeToEnd()/1000;
+	}
+	
+	private long startGame() {
+		return this.game.startGame();
+	}
+	
+	private long stopGame() {
+		return this.game.stopGame();
+	}
+	
+	private boolean isRunning() {
+		return game.isRunning();
+	}
+	
+	private String Score(ArrayList<Robot> al){
+		String ans ="";
+		for(int i=0;i<al.size();i++) {
+			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
+			ans+="\n";
+		}
+		return ans;
+	}
+	
+	
 }
 	
 	
