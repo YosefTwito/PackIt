@@ -39,17 +39,19 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 	private static final long serialVersionUID = 1L;
 
 	graph gr;
-
+	graph original;
+	
 	public GraphGui(DGraph g){
 		g.addListener(this);
 		this.gr=g;
+		this.original=g;
 		initGUI(g);
 	}
 
 	public void paint(Graphics d) {
 		super.paint(d);
 
-		if (gr != null && gr.nodeSize()>1) {
+		if (gr != null && gr.nodeSize()>=1) {
 			//get nodes
 			Collection<node_data> nodes = gr.getV();
 
@@ -78,8 +80,14 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 						d.setColor(Color.MAGENTA);
 						d.fillOval((int)((p.ix()*0.7)+(0.3*p2.ix()))+2, (int)((p.iy()*0.7)+(0.3*p2.iy())), 9, 9);
 						//draw weight
-						String sss = ""+String.valueOf(e.getWeight());
+						
+						String sss = ""+String.format("%.3f",e.getWeight());
+						
 						d.drawString(sss, 1+(int)((p.ix()*0.7)+(0.3*p2.ix())), (int)((p.iy()*0.7)+(0.3*p2.iy()))-2);
+						//draw robots
+							
+						//draw fruits
+						
 					}
 				}	
 			}
@@ -89,11 +97,19 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 	private void initGUI(graph g) {
 		this.gr=g;
 		this.setSize(1280, 720);
-		this.setTitle("Hello and welcome to The Maze Of Waze !");
+		this.setTitle("Hello and welcome to PackIt !");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setResizable(true);
 		ImageIcon img = new ImageIcon("Rocket.png");
 		this.setIconImage(img.getImage());
-		this.setResizable(true);
+		
+		/*ImageIcon fruit1 = new ImageIcon("Rocket.png");
+		ImageIcon fruit2 = new ImageIcon("Rocket.png");
+		ImageIcon fruit3 = new ImageIcon("Rocket.png");
+		ImageIcon robot1 = new ImageIcon("Rocket.png");
+		ImageIcon robot2 = new ImageIcon("Rocket.png");
+		ImageIcon robot3 = new ImageIcon("Rocket.png");*/
+		
 
 		MenuBar menuBar = new MenuBar();
 		this.setMenuBar(menuBar);
@@ -135,6 +151,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		MenuItem item6 = new MenuItem("The SalesMan Problem");
 		item6.addActionListener(this);
 		alg.add(item6);
+		
 	}
 
 	@Override
@@ -146,7 +163,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		switch(str) {
 
 		case "Init Original Graph":
-			initGUI(this.gr);
+			initGUI(this.original);
 			break;
 
 		case "Init from File ":

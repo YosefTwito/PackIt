@@ -37,7 +37,7 @@ public class MyGame {
 		String g = game.getGraph(); // graph as string.
 		DGraph gg = new DGraph();
 		game.addRobot(1);
-		gg.init(g); // TODO init from json string to DGraph in DGraph!!!
+		gg.init(g);
 		//we have the graph. now we need to get the robots and fruits.
 		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
 		//after that, we need to update our GUI with new parameters and present it.
