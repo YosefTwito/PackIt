@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -28,7 +29,7 @@ import algorithms.*;
 import dataStructure.*;
 import gameClient.*;
 import utils.*;
-
+import gameClient.*;
 /**
  * This class makes a gui window to represent a graph and
  * use the Algorithms from class Graph_Algo on live.
@@ -38,7 +39,7 @@ import utils.*;
 public class GraphGui extends JFrame implements ActionListener, GraphListener{
 
 	private static final long serialVersionUID = 1L;
-
+	MyGame mg;
 	graph gr;
 	graph original;
 	ArrayList<Robot> robots;
@@ -52,14 +53,29 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		initGUI(g);
 	}
 
-	public GraphGui(DGraph g, ArrayList<Fruit> fruits, ArrayList<Robot> robots, double [] size){
+	private static int nextNode(graph g, int src) {
+		int ans = -1;
+		Collection<edge_data> ee = g.getE(src);
+		Iterator<edge_data> itr = ee.iterator();
+		int s = ee.size();
+		int r = (int)(Math.random()*s);
+		int i=0;
+		while(i<r) {itr.next();i++;}
+		ans = itr.next().getDest();
+		return ans;
+	}
+
+
+	public GraphGui(DGraph g, ArrayList<Fruit> fruits, ArrayList<Robot> robots, double [] size,MyGame game){
 		g.addListener(this);
 		this.gr=g;
 		this.original=g;
 		this.fruits=fruits;
 		this.robots=robots;
 		this.exPos = size;
+		this.mg=game;
 		initGUI(g);
+		mg.game.startGame();
 	}
 
 	private static double scale(double data, double r_min, double r_max, double t_min, double t_max)
@@ -71,9 +87,8 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 	public void paint(Graphics d) {
 		super.paint(d);
 		
-		//update robots position.
 		
-		//update fruits position.
+		
 
 		if (gr != null && gr.nodeSize()>=1) {
 			//get nodes
@@ -141,6 +156,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 							}
 						}
 					}
+					//mg.RoboLoc(); // UPDATE ROBO LOC
 
 					/*
 						//draw direction
@@ -153,7 +169,8 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 					 */				
 				}	
 			}
-		}	
+		}
+		
 	}
 
 	private void initGUI(graph g) {
@@ -179,7 +196,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		item1.addActionListener(this);
 		file.add(item1);
 
-		MenuItem item2 = new MenuItem("Init from File ");
+		MenuItem item2 = new MenuItem("Show Robot Movement");
 		item2.addActionListener(this);
 		file.add(item2);
 
@@ -221,20 +238,9 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 			initGUI(this.original);
 			break;
 
-		case "Init from File ":
-			t=new Graph_Algo();
-
-			j = new JFileChooser(FileSystemView.getFileSystemView());
-			j.setDialogTitle("Init graph out of file.."); 
-
-			int userSelection = j.showOpenDialog(null);
-			if(userSelection == JFileChooser.APPROVE_OPTION) {
-				System.out.println("You chose to open this file - " + j.getSelectedFile().getName());
-				t.init(j.getSelectedFile().getAbsolutePath());
-				graph gr_new=t.copy();
-				initGUI(gr_new);	
-			}			
-			break;
+		case "Show Robot Movement":
+			mg.RoboLoc();
+			repaint();
 
 		case "Save as File ":
 			t=new Graph_Algo((DGraph)this.gr);		
@@ -516,10 +522,15 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 			break;
 		}
 	}
+	
+	
+	
+	
 
 	@Override
 	public void graphUpdater() {	
 		repaint();	
 	}
+	
 
 }

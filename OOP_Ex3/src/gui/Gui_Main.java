@@ -73,9 +73,21 @@ public class Gui_Main {
 		});
 
 		//Init gui
-		GraphGui a = new GraphGui(g, fr, rob, size);
+		GraphGui a = new GraphGui(g, fr, rob, size,mg);
 		//Let the Show Begin !
 		a.setVisible(true);
+		
+		while(game.isRunning()) {
+			for(Robot t: a.mg.robo_list) {
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				System.out.println("ID"+t.getID() + "DEST" + t.getDest());
+			}
+		}
 
 	}
 }

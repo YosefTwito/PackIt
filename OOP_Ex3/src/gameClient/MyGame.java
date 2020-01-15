@@ -92,7 +92,8 @@ public class MyGame {
 					int src = jrobots.getInt("src");
 					int dest = jrobots.getInt("dest");
 					double val = jrobots.getDouble("value");
-					Robot r = new Robot(rid,src,dest,p,val);
+					int speed = jrobots.getInt("speed");
+					Robot r = new Robot(rid,src,dest,p,val,speed);
 					robo_list.add(r);
 					
 					
@@ -217,6 +218,63 @@ public class MyGame {
 		
 		return ans;
 	}
+	
+	public void RoboLoc() {
+
+		for(Robot r:robo_list) {
+			
+			if(r.getDest()==-1) {
+				r.setDest(nextNode(graph,r.getSrc()));
+				game.chooseNextEdge(r.getID(), r.getDest());
+			}
+			else {
+				edge_data ed = graph.getEdge(r.getSrc(), r.getDest());
+				node_data src = graph.getNode(r.getSrc());
+				node_data dst = graph.getNode(r.getDest());
+				
+				//CALCULATE NEW POS
+				double ansx = Math.abs((r.getPos().x()-dst.getLocation().x())/2);
+				double ansy = Math.abs((r.getPos().y()-dst.getLocation().y())/2);
+				if(src.getLocation().x()>dst.getLocation().x() && src.getLocation().y()>dst.getLocation().y()) {
+					r.setPos(r.getPos().x()-ansx, r.getPos().y()-ansy, 0);
+				}
+				if(src.getLocation().x()>dst.getLocation().x() && src.getLocation().y()<dst.getLocation().y()) {
+					r.setPos(r.getPos().x()-ansx, r.getPos().y()+ansy, 0);
+				}
+				if(src.getLocation().x()<dst.getLocation().x() && src.getLocation().y()>dst.getLocation().y()) {
+					r.setPos(r.getPos().x()+ansx, r.getPos().y()-ansy, 0);
+				}
+				if(src.getLocation().x()<dst.getLocation().x() && src.getLocation().y()<dst.getLocation().y()) {
+					r.setPos(r.getPos().x()+ansx, r.getPos().y()+ansy, 0);
+				}
+				
+				if(Math.abs(graph.getNode(r.getDest()).getLocation().distance3D(r.getPos()))<0.01) {
+					r.setDest(-1);
+				}
+				for(Fruit f: fru_list) {
+					if(f.from==r.getSrc() && f.to==r.getDest()) {
+						if(Math.abs(f.getPos().distance3D(r.getPos()))<0.01) {
+							eat(r,f);
+						}
+					}
+				}
+				
+				
+				
+			}
+		}
+		
+		
+		
+	}
+	
+	private static void eat(Robot r, Fruit f) {
+		r.setV(r.getV()+f.getV());
+		r.incSpeed();
+		//SET NEW POS TO FRUIT
+		
+	}
+	
 	
 	
 }

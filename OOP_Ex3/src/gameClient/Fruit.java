@@ -41,5 +41,9 @@ public class Fruit {
 		else if (this.fru==type.banana) return -1;
 		else return 2;
 	}
-
+	
+	public void setPos(Point3D np) { this.pos = np; }
+	public Point3D getPos() { return this.pos; }
+	public void setV(double v) { this.value=v; }
+	public double getV() { return this.value; }
 }

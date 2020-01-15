@@ -54,7 +54,7 @@ public class SimpleGameClient {
 		game.addRobot(1);
 		System.out.println(game.getFruits());
 		System.out.println(game.getRobots());
-
+		game.move();
 		
 		System.out.println(g);
 		
@@ -80,9 +80,11 @@ public class SimpleGameClient {
 					int rid = ttt.getInt("id");
 					int src = ttt.getInt("src");
 					int dest = ttt.getInt("dest");
-					
+				
 					if(dest==-1) {	
+						
 						dest = nextNode(gg, src);
+						
 						game.chooseNextEdge(rid, dest);
 						System.out.println("Turn to node: "+dest);
 						System.out.println(ttt);
