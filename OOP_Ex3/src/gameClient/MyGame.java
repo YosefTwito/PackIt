@@ -25,18 +25,23 @@ import utils.Point3D;
  *
  */
 public class MyGame {
-	game_service game;
-	static graph graph;
-	ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
-	ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
+	public game_service game;
+	public graph graph;
+	public ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
+	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(4); // this is where we get the user input too know what game to play [0,23];
+		game_service game = Game_Server.getServer(23); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
+		System.out.println(game.getRobots());
 		DGraph gg = new DGraph();
-		game.addRobot(1);
+		game.addRobot(0);
+		game.addRobot(0);
+		game.addRobot(0);
+	
+		System.out.println(game.getRobots());
 		gg.init(g);
 		//we have the graph. now we need to get the robots and fruits.
 		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
@@ -92,6 +97,8 @@ public class MyGame {
 					
 					
 				}
+				int amountR = robo_list.size();
+				System.out.println(amountR);
 
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -135,7 +142,7 @@ public class MyGame {
 		}
 	}
 	
-	/* TO BE USED LATER
+	
 	private static int nextNode(graph g, int src) {
 		int ans = -1;
 		Collection<edge_data> ee = g.getE(src);
@@ -147,15 +154,15 @@ public class MyGame {
 		ans = itr.next().getDest();
 		return ans;
 	}
-	*/
+	
 	
 	private static int nextNodeManual(graph g, int src,int dest) {
-		if(graph.getNode(dest)==null) return -1;
+		if(g.getNode(dest)==null) return -1;
 		int ans = -1;
 		Collection<edge_data> ee = g.getE(src);
 		for(edge_data e:ee) {
 			if(e==null) return -1;
-			if(e.getDest()==graph.getNode(dest).getKey()) return 1;
+			if(e.getDest()==g.getNode(dest).getKey()) return 1;
 		}
 		return ans;
 	
@@ -192,21 +199,22 @@ public class MyGame {
 	 * @param g - graph
 	 * @return the edge_data that hold the fruit.
 	 */
-	private edge_data fruitToEdge(Fruit f,graph g) {
+	public edge_data fruitToEdge(Fruit f,graph g) {
 		edge_data ans = null;
 		Point3D f_p = f.pos;
 		Collection<node_data> nd = g.getV();
 		for(node_data n:nd) {
 			Point3D ns_p = n.getLocation();
 			Collection<edge_data> ed = g.getE(n.getKey());
-			if(ed==null) break;
+			if(ed==null) continue;
 			for(edge_data e : ed) {
 				Point3D nd_p = g.getNode(e.getDest()).getLocation();
-				if(ns_p.distance3D(f_p)+f_p.distance3D(nd_p)==ns_p.distance3D(nd_p)) {
+				if((ns_p.distance3D(f_p)+f_p.distance3D(nd_p))-ns_p.distance3D(nd_p)<0.000001) {
 					return e;
 				}
 			}
 		}
+		
 		return ans;
 	}
 	

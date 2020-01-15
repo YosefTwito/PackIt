@@ -35,7 +35,7 @@ public class SimpleGameClient {
 	}
 	
 	public static void testing() { // this is eldar's testing method.
-		game_service game = Game_Server.getServer(2);
+		game_service game = Game_Server.getServer(4);
 		game.addRobot(0);
 		game.addRobot(2);
 		
@@ -43,7 +43,7 @@ public class SimpleGameClient {
 	}
 	
 	public static void test1() {
-		game_service game = Game_Server.getServer(4); // you have [0,23] games
+		game_service game = Game_Server.getServer(23); // you have [0,23] games
 		String g = game.getGraph();
 		String info = game.toString();
 		System.out.println(game.getGraph());

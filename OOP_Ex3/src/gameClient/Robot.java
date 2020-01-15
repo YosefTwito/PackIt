@@ -25,9 +25,11 @@ public class Robot {
 		this.value=value;
 		this.pos=pos;
 	}
-	
+
 	public Robot() {
-		
+
 	}
+	
+	public Point3D getPos() { return this.pos; }
 
 }

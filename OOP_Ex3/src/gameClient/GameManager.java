@@ -26,7 +26,7 @@ public class GameManager {
 	ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
 	ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 
-	//Constructor: not finised.
+	//Constructor: not finished.
 	public GameManager(int s,DGraph g,ArrayList<Robot> robo_list,ArrayList<Fruit> fru_list) {
 		this.Scenario=Game_Server.getServer(s);
 		this.graph=g;

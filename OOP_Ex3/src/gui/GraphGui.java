@@ -26,6 +26,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import algorithms.*;
 import dataStructure.*;
+import gameClient.*;
 import utils.*;
 
 /**
@@ -40,7 +41,10 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 
 	graph gr;
 	graph original;
-	
+	ArrayList<Robot> robots;
+	ArrayList<Fruit> fruits;
+	double [] exPos;
+
 	public GraphGui(DGraph g){
 		g.addListener(this);
 		this.gr=g;
@@ -48,8 +52,28 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		initGUI(g);
 	}
 
+	public GraphGui(DGraph g, ArrayList<Fruit> fruits, ArrayList<Robot> robots, double [] size){
+		g.addListener(this);
+		this.gr=g;
+		this.original=g;
+		this.fruits=fruits;
+		this.robots=robots;
+		this.exPos = size;
+		initGUI(g);
+	}
+
+	private static double scale(double data, double r_min, double r_max, double t_min, double t_max)
+	{
+		double res = ((data - r_min) / (r_max-r_min)) * (t_max - t_min) + t_min;
+		return res;
+	}
+	
 	public void paint(Graphics d) {
 		super.paint(d);
+		
+		//update robots position.
+		
+		//update fruits position.
 
 		if (gr != null && gr.nodeSize()>=1) {
 			//get nodes
@@ -63,7 +87,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 
 				//draw nodes-key's
 				d.setColor(Color.BLUE);
-				d.drawString(""+n.getKey(), p.ix()-4, p.iy()-4);
+				d.drawString(""+n.getKey(), p.ix()-4, p.iy()-5);
 
 				//check if there are edges
 				if (gr.edgeSize()==0) { continue; }
@@ -76,19 +100,57 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 						((Graphics2D) d).setStroke(new BasicStroke(2,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));
 						Point3D p2 = gr.getNode(e.getDest()).getLocation();
 						d.drawLine(p.ix()+5, p.iy()+5, p2.ix()+5, p2.iy()+5);
+
+					}	
+
+					//draw fruits
+					if (this.fruits != null) {
+						if (this.fruits.size()>0) {
+							//get icons
+							ImageIcon apple = new ImageIcon("ap2.jpg");
+							ImageIcon banana = new ImageIcon("ba2.jpg");
+							//draw
+							int srcF, destF;
+							Point3D tempS, tempD;
+							for (int i=0; i<this.fruits.size(); i++) {
+								srcF = this.fruits.get(i).from;
+								destF = this.fruits.get(i).to;
+								if (this.fruits.get(i).getType()==2) {
+									tempS = this.gr.getNode(srcF).getLocation();
+									tempD = this.gr.getNode(destF).getLocation();
+									d.drawImage(apple.getImage(), (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))-5, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))-10, (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))+15, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))+10, 0, 0, 413, 472, null);
+								}
+								else {
+									tempS = this.gr.getNode(srcF).getLocation();
+									tempD = this.gr.getNode(destF).getLocation();
+									d.drawImage(banana.getImage(), (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))-5, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))-10, (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))+15, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))+10, 0, 0, 413, 472, null);
+								}
+							}
+						}
+					}
+					//draw robots
+					if (this.robots !=null) {
+						//get icon
+						ImageIcon robocop = new ImageIcon("robo.jpg");
+						if (this.robots.size()>0) {
+							for (int i=0; i< robots.size(); i++) {
+								//reposition to robots
+								Point3D pos = new Point3D((int)scale(robots.get(i).getPos().x(),this.exPos[0],this.exPos[1],50,1230), (int)scale(robots.get(i).getPos().y(),this.exPos[2],this.exPos[3],80,670));
+								//draw
+								d.drawImage(robocop.getImage(), pos.ix()-10, pos.iy()-13, pos.ix()+10, pos.iy()+13, 0, 0, 345, 482, null);
+							}
+						}
+					}
+
+					/*
 						//draw direction
 						d.setColor(Color.MAGENTA);
 						d.fillOval((int)((p.ix()*0.7)+(0.3*p2.ix()))+2, (int)((p.iy()*0.7)+(0.3*p2.iy())), 9, 9);
 						//draw weight
-						
+
 						String sss = ""+String.format("%.3f",e.getWeight());
-						
 						d.drawString(sss, 1+(int)((p.ix()*0.7)+(0.3*p2.ix())), (int)((p.iy()*0.7)+(0.3*p2.iy()))-2);
-						//draw robots
-							
-						//draw fruits
-						
-					}
+					 */				
 				}	
 			}
 		}	
@@ -102,14 +164,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		this.setResizable(true);
 		ImageIcon img = new ImageIcon("Rocket.png");
 		this.setIconImage(img.getImage());
-		
-		/*ImageIcon fruit1 = new ImageIcon("Rocket.png");
-		ImageIcon fruit2 = new ImageIcon("Rocket.png");
-		ImageIcon fruit3 = new ImageIcon("Rocket.png");
-		ImageIcon robot1 = new ImageIcon("Rocket.png");
-		ImageIcon robot2 = new ImageIcon("Rocket.png");
-		ImageIcon robot3 = new ImageIcon("Rocket.png");*/
-		
+
 
 		MenuBar menuBar = new MenuBar();
 		this.setMenuBar(menuBar);
@@ -151,7 +206,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		MenuItem item6 = new MenuItem("The SalesMan Problem");
 		item6.addActionListener(this);
 		alg.add(item6);
-		
+
 	}
 
 	@Override
