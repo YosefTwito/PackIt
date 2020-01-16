@@ -78,13 +78,19 @@ public class Gui_Main {
 		a.setVisible(true);
 		while(mg.game.isRunning()) {
 			try {
-				Thread.sleep(1000);
+				Thread.sleep(100);
+				a.mg.upDate();
+				a.mg.update();
+				System.out.println(mg.Score(rob));
+				a.repaint();
+				
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
+				
 				e.printStackTrace();
 			}
-			System.out.println(mg.game.timeToEnd());
+			//System.out.println(mg.game.timeToEnd());
 		}
+		
 		
 		
 

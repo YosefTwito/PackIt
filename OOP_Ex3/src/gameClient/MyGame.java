@@ -5,6 +5,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.plaf.synth.SynthDesktopIconUI;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -35,13 +37,12 @@ public class MyGame {
 	public static void main(String[] args) {
 		game_service game = Game_Server.getServer(23); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
-		System.out.println(game.getRobots());
+
 		DGraph gg = new DGraph();
 		game.addRobot(0);
 		game.addRobot(0);
 		game.addRobot(0);
 	
-		System.out.println(game.getRobots());
 		gg.init(g);
 		//we have the graph. now we need to get the robots and fruits.
 		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
@@ -50,8 +51,8 @@ public class MyGame {
 		//GarphGui gui = new GraphGui(myg); // YOSSI TA'ASE INIT LEZE <3
 		
 		
-		
-		
+		System.out.println(game.getFruits());
+		MyGame mg = new MyGame(gg,game);
 		
 	
 		
@@ -61,17 +62,17 @@ public class MyGame {
 	public MyGame(graph g,game_service game) {
 		graph=g;
 		this.game=game;
-		fetchRobots(game);
-		fetchFruits(game);
+		fetchRobots();
+		fetchFruits();
 	}
 	public MyGame() {
 		graph=null;
 		this.game=null;
 	}
 	
-	private void fetchRobots(game_service g) {
+	private void fetchRobots() {
 		
-		List<String> log = g.getRobots();
+		List<String> log = game.getRobots();
 		if(log!=null) {
 			String robot_json = log.toString();
 
@@ -110,8 +111,8 @@ public class MyGame {
 		
 	
 }
-	private void fetchFruits(game_service g) {
-		List<String> log = g.getFruits();
+	private void fetchFruits() {
+		List<String> log = game.getFruits();
 		if(log!=null) {
 			String fru_json = log.toString();
 
@@ -132,6 +133,7 @@ public class MyGame {
 					int type = fru.getInt("type");
 					Fruit f = new Fruit(value,type,p);
 					fru_list.add(f);
+					
 				}
 
 			} catch (JSONException e) {
@@ -153,6 +155,32 @@ public class MyGame {
 		while(i<r) {itr.next();i++;}
 		ans = itr.next().getDest();
 		return ans;
+	}
+	private int startHere(graph g,int src) {
+		int ans=0;
+		double temp=0;
+		if(g.edgeSize()<30) {
+			for(Fruit f:fru_list) {
+				if(f.value>temp) {
+					ans=f.from;
+					temp=f.value;
+				}
+				
+			}
+			return ans;
+		}
+		else  {
+			for(node_data nd:g.getV()) {
+				int s= g.getE(nd.getKey()).size();
+				if(s>temp) {
+					ans=nd.getKey();
+					temp=s;
+				}
+				
+			}
+		}
+		return ans;
+		
 	}
 	
 	
@@ -184,7 +212,7 @@ public class MyGame {
 		return game.isRunning();
 	}
 	
-	private String Score(ArrayList<Robot> al){
+	public String Score(ArrayList<Robot> al){
 		String ans ="";
 		for(int i=0;i<al.size();i++) {
 			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
@@ -217,11 +245,21 @@ public class MyGame {
 		
 		return ans;
 	}
+	public boolean close(Robot r) {
+		for(Fruit f:fru_list) {
+			if(r.src==f.from && r.dest==f.to) return true;
+		}
+		return false;
+	}
 	
 	public void upDate() {
+		
 		robo_list.clear();
+		
 		List<String> log = game.move();	
+		
 		if(log!=null) {
+			
 			String robot_json = log.toString();
 
 			try {
@@ -244,6 +282,10 @@ public class MyGame {
 					int speed = jrobots.getInt("speed");
 					Robot r = new Robot(rid,src,dest,p,val,speed);
 					robo_list.add(r);
+					//if(close(r)) update();
+					//update();
+					
+					
 					
 					
 				}
@@ -253,21 +295,72 @@ public class MyGame {
 						r.setDest(nextNode(graph, r.src));
 						game.chooseNextEdge(r.id, r.dest);
 					}
+					
+					
+				}
+				
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+		
+		}
+
+	}
+	public void update() {
+		
+		List<String> log = game.getFruits();
+		
+		if(log!=null) {
+			String fru_json = log.toString();
+
+			try {
+				JSONArray line= new JSONArray(fru_json);
+				
+				
+				for(int i =0; i<line.length();i++) {
+					JSONObject j = line.getJSONObject(i);
+					JSONObject fru = j.getJSONObject("Fruit");
+					String loc = fru.getString("pos");
+					String[] xyz = loc.split(",");
+					double x = Double.parseDouble(xyz[0]);
+					double y = Double.parseDouble(xyz[1]);
+					double z = Double.parseDouble(xyz[2]);
+					Point3D p = new Point3D(x,y,z);
+					double value = fru.getDouble("value");
+					int type = fru.getInt("type");
+					Fruit f = new Fruit(value,type,p);
+					fru_list.add(f);
+					
 				}
 
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-		
-		}
-
-	}
-	public int whereToStart() {
-		int ans;
-		for(node_data nd : graph.getV()) {
 			
 		}
+			
+		
+	}
+	public int whereToStart() {
+		int ans=0;
+		double temp=0;
+		for(node_data nd : graph.getV()) {
+			for(edge_data ed: graph.getE(nd.getKey())) {
+				for(Fruit f:fru_list) {
+					if(f.from==ed.getSrc() && f.to==ed.getDest()) {
+						if(f.value>temp) {
+							ans=f.from;
+							temp=f.value;
+						}
+					}
+				}
+			}
+		}
+		return ans;
 	}
 		
 		

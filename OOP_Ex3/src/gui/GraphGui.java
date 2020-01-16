@@ -84,12 +84,13 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		double res = ((data - r_min) / (r_max-r_min)) * (t_max - t_min) + t_min;
 		return res;
 	}
-	
+	private BufferedImage buff;
+	private BufferedImage buff2;
+	private Graphics2D g;
+	private Graphics2D g1;
 	public void paint(Graphics d) {
 		super.paint(d);
-		
-		
-		
+
 
 		if (gr != null && gr.nodeSize()>=1) {
 			//get nodes
@@ -116,22 +117,23 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 						((Graphics2D) d).setStroke(new BasicStroke(2,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));
 						Point3D p2 = gr.getNode(e.getDest()).getLocation();
 						d.drawLine(p.ix()+5, p.iy()+5, p2.ix()+5, p2.iy()+5);
+						
 
 					}	
 
 					//draw fruits
-					if (this.fruits != null) {
-						if (this.fruits.size()>0) {
+					if (mg.fru_list != null) {
+						if (mg.fru_list.size()>0) {
 							//get icons
 							ImageIcon apple = new ImageIcon("ap2.jpg");
 							ImageIcon banana = new ImageIcon("ba2.jpg");
 							//draw
 							int srcF, destF;
 							Point3D tempS, tempD;
-							for (int i=0; i<this.fruits.size(); i++) {
-								srcF = this.fruits.get(i).from;
-								destF = this.fruits.get(i).to;
-								if (this.fruits.get(i).getType()==2) {
+							for (int i=0; i<mg.fru_list.size(); i++) {
+								srcF = mg.fru_list.get(i).from;
+								destF = mg.fru_list.get(i).to;
+								if (mg.fru_list.get(i).getType()==-1) {
 									tempS = this.gr.getNode(srcF).getLocation();
 									tempD = this.gr.getNode(destF).getLocation();
 									d.drawImage(apple.getImage(), (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))-5, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))-10, (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))+15, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))+10, 0, 0, 413, 472, null);
@@ -154,10 +156,13 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 								Point3D pos = new Point3D((int)scale(robots.get(i).getPos().x(),this.exPos[0],this.exPos[1],50,1230), (int)scale(robots.get(i).getPos().y(),this.exPos[2],this.exPos[3],80,670));
 								//draw
 								d.drawImage(robocop.getImage(), pos.ix()-10, pos.iy()-13, pos.ix()+10, pos.iy()+13, 0, 0, 345, 482, null);
+
+								
 							}
 						}
 					}
-					//mg.RoboLoc(); // UPDATE ROBO LOC
+					
+					
 
 					/*
 						//draw direction

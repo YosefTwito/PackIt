@@ -13,35 +13,23 @@ import utils.Point3D;
  */
 public class Fruit {
 	double value;
-	enum type { banana, apple , eldar};
+	int type;
 	Point3D pos;
 	public int from;
 	public int to;
-	type fru;
+	
 	
 	
 	public Fruit(double value, int y, Point3D pos) {
 		this.value=value;
 		this.pos=pos;
-		if(y==1) {
-			fru=type.banana;
-			
-		}
-		if(y==-1) {
-			fru=type.apple;
-		}
-		else fru=type.eldar;
+		this.type=y;
 	}
 	public Fruit() {
 		
 	}
-	
-	public int getType(){ 
-		if (this.fru==type.apple) return 1;
-		else if (this.fru==type.banana) return -1;
-		else return 2;
-	}
-	
+
+	public int getType() { return this.type; }
 	public void setPos(Point3D np) { this.pos = np; }
 	public Point3D getPos() { return this.pos; }
 	public void setV(double v) { this.value=v; }

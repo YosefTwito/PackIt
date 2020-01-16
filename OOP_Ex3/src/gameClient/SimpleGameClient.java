@@ -52,6 +52,7 @@ public class SimpleGameClient {
 		gg.init(g);
 		game.addRobot(0);
 		game.addRobot(1);
+		
 
 	//	System.out.println(game.getFruits());
 	//	System.out.println(game.getRobots());
@@ -71,11 +72,11 @@ public class SimpleGameClient {
 			long t = game.timeToEnd();
 			//System.out.println("round: "+i+"  seconds to end:"+(t/1000));
 			List<String> log = game.move();
-	
+			
 			if(log!=null) {
 				
 				String robot_json = log.get(0);
-			//	System.out.println(robot_json);
+				//System.out.println(robot_json);
 				JSONObject line;
 				try {
 					line = new JSONObject(robot_json);
@@ -83,14 +84,15 @@ public class SimpleGameClient {
 					int rid = ttt.getInt("id");
 					int src = ttt.getInt("src");
 					int dest = ttt.getInt("dest");
+					
 				
 					if(dest==-1) {	
-						
+						System.out.println(game.getFruits());
 						dest = nextNode(gg, src);
 						
 						game.chooseNextEdge(rid, dest);
-						System.out.println("Turn to node: "+dest);
-						System.out.println(ttt);
+				//		System.out.println("Turn to node: "+dest);
+				//		System.out.println(ttt);
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
