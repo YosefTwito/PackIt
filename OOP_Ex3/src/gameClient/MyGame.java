@@ -98,8 +98,7 @@ public class MyGame {
 					
 					
 				}
-				int amountR = robo_list.size();
-				System.out.println(amountR);
+			
 
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -219,61 +218,61 @@ public class MyGame {
 		return ans;
 	}
 	
-	public void RoboLoc() {
+	public void upDate() {
+		robo_list.clear();
+		List<String> log = game.move();	
+		if(log!=null) {
+			String robot_json = log.toString();
 
-		for(Robot r:robo_list) {
-			
-			if(r.getDest()==-1) {
-				r.setDest(nextNode(graph,r.getSrc()));
-				game.chooseNextEdge(r.getID(), r.getDest());
-			}
-			else {
-				edge_data ed = graph.getEdge(r.getSrc(), r.getDest());
-				node_data src = graph.getNode(r.getSrc());
-				node_data dst = graph.getNode(r.getDest());
+			try {
+				JSONArray line= new JSONArray(robot_json);
 				
-				//CALCULATE NEW POS
-				double ansx = Math.abs((r.getPos().x()-dst.getLocation().x())/2);
-				double ansy = Math.abs((r.getPos().y()-dst.getLocation().y())/2);
-				if(src.getLocation().x()>dst.getLocation().x() && src.getLocation().y()>dst.getLocation().y()) {
-					r.setPos(r.getPos().x()-ansx, r.getPos().y()-ansy, 0);
-				}
-				if(src.getLocation().x()>dst.getLocation().x() && src.getLocation().y()<dst.getLocation().y()) {
-					r.setPos(r.getPos().x()-ansx, r.getPos().y()+ansy, 0);
-				}
-				if(src.getLocation().x()<dst.getLocation().x() && src.getLocation().y()>dst.getLocation().y()) {
-					r.setPos(r.getPos().x()+ansx, r.getPos().y()-ansy, 0);
-				}
-				if(src.getLocation().x()<dst.getLocation().x() && src.getLocation().y()<dst.getLocation().y()) {
-					r.setPos(r.getPos().x()+ansx, r.getPos().y()+ansy, 0);
+				for(int i=0; i< line.length();i++) {
+					
+					JSONObject j= line.getJSONObject(i);
+					JSONObject jrobots = j.getJSONObject("Robot");
+					String loc = jrobots.getString("pos");
+					String[] xyz = loc.split(",");
+					double x = Double.parseDouble(xyz[0]);
+					double y = Double.parseDouble(xyz[1]);	
+					double z = Double.parseDouble(xyz[2]);
+					Point3D p = new Point3D(x,y,z);
+					int rid = jrobots.getInt("id");
+					int src = jrobots.getInt("src");
+					int dest = jrobots.getInt("dest");
+					double val = jrobots.getDouble("value");
+					int speed = jrobots.getInt("speed");
+					Robot r = new Robot(rid,src,dest,p,val,speed);
+					robo_list.add(r);
+					
+					
 				}
 				
-				if(Math.abs(graph.getNode(r.getDest()).getLocation().distance3D(r.getPos()))<0.01) {
-					r.setDest(-1);
-				}
-				for(Fruit f: fru_list) {
-					if(f.from==r.getSrc() && f.to==r.getDest()) {
-						if(Math.abs(f.getPos().distance3D(r.getPos()))<0.01) {
-							eat(r,f);
-						}
+				for(Robot r:robo_list) {
+					if(r.dest==-1) {
+						r.setDest(nextNode(graph, r.src));
+						game.chooseNextEdge(r.id, r.dest);
 					}
 				}
-				
-				
-				
+
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
+		
 		}
-		
-		
-		
+
 	}
+	public int whereToStart() {
+		int ans;
+		for(node_data nd : graph.getV()) {
+			
+		}
+	}
+		
+		
 	
-	private static void eat(Robot r, Fruit f) {
-		r.setV(r.getV()+f.getV());
-		r.incSpeed();
-		//SET NEW POS TO FRUIT
-		
-	}
+	
 	
 	
 	

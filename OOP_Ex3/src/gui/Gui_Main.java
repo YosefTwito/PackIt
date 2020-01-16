@@ -3,9 +3,6 @@ package gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
-import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-
 import Server.Game_Server;
 import Server.game_service;
 import dataStructure.*;
@@ -44,70 +41,53 @@ public class Gui_Main {
 
 	public static void main(String[] args) {
 
-		JFrame choose = new JFrame();
-		boolean canStart = true;
-		int amountC = -1;
-		try {
-			while (amountC < 0 || amountC >23) {
-				String howMany = JOptionPane.showInputDialog(choose,"Hello, please choose Map out of our 24 Options \n                  Enter a number between 0-23 :");
-				amountC = Integer.parseInt(howMany);
-				if (amountC <= 23 && amountC >=0) break;
-				JOptionPane.showMessageDialog(choose, "You've entered illegal Map number");
-			}
+		////////////////////////////////// ToDo generic - later.///////////////////////////////////////////
+		game_service game = Game_Server.getServer(4); // this is where we get the user input too know what game to play [0,23];
+		game.addRobot(0);
+		game.addRobot(1);
+		game.addRobot(2);
+		String str = game.getGraph(); // graph as string.
+		DGraph g = new DGraph();
+		
+		g.init(str);
 
-		} catch (Exception e) {
-			canStart=false;
-			JOptionPane.showMessageDialog(choose, "Error - You did not enter a number");
-		}
-
-		if (canStart) {
-			game_service game = Game_Server.getServer(amountC); // this is where we get the user input too know what game to play [0,23];
-			game.addRobot(0);
-			game.addRobot(1);
-			game.addRobot(2);
-			String str = game.getGraph(); // graph as string.
-			DGraph g = new DGraph();
-
-			g.init(str);
-
-			//add objects parameters to GraphGui:
-			MyGame mg = new MyGame(g, game);
-			//get fruits.
-			ArrayList<Fruit> fr = mg.fru_list;
-			if (fr != null) {
-				for (int i=0; i<fr.size(); i++) {
-					fr.get(i).from = mg.fruitToEdge(fr.get(i), g).getSrc();
-					fr.get(i).to = mg.fruitToEdge(fr.get(i), g).getDest();
-				}
-			}
-			//get robots.
-			ArrayList<Robot> rob = mg.robo_list;
-
-			//relocate nodes to valid coordination.
-			double [] size = scaleHelper(g.nodesMap);
-			g.nodesMap.forEach((k, v) -> {
-				Point3D loc = v.getLocation();
-				Point3D newL = new Point3D((int)scale(loc.x(),size[0],size[1],50,1230), (int)scale(loc.y(),size[2],size[3],80,670));
-				v.setLocation(newL);
-			});
-
-			//Initialize Graphical window
-			GraphGui a = new GraphGui(g, fr, rob, size,mg);
-			//Let the Show Begin !
-			a.setVisible(true);
-
-			while(game.isRunning()) {
-				for(Robot t: a.mg.robo_list) {
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					System.out.println("ID: "+t.getID() + " , DEST: " + t.getDest());
-				}
+		//add objects parameters to GraphGui:
+		MyGame mg = new MyGame(g, game);
+		//get fruits.
+		ArrayList<Fruit> fr = mg.fru_list;
+		if (fr != null) {
+			for (int i=0; i<fr.size(); i++) {
+				fr.get(i).from = mg.fruitToEdge(fr.get(i), g).getSrc();
+				fr.get(i).to = mg.fruitToEdge(fr.get(i), g).getDest();
 			}
 		}
+		//get robots.
+		ArrayList<Robot> rob = mg.robo_list;
+		
+		//relocate nodes to valid coordination.
+		double [] size = scaleHelper(g.nodesMap);
+		g.nodesMap.forEach((k, v) -> {
+			Point3D loc = v.getLocation();
+			Point3D newL = new Point3D((int)scale(loc.x(),size[0],size[1],50,1230), (int)scale(loc.y(),size[2],size[3],80,670));
+			v.setLocation(newL);
+		});
+
+		//Init gui
+		GraphGui a = new GraphGui(g, fr, rob, size,mg);
+		//Let the Show Begin !
+		a.setVisible(true);
+		while(mg.game.isRunning()) {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			System.out.println(mg.game.timeToEnd());
+		}
+		
+		
+
 	}
 }
 

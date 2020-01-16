@@ -45,18 +45,19 @@ public class SimpleGameClient {
 	public static void test1() {
 		game_service game = Game_Server.getServer(23); // you have [0,23] games
 		String g = game.getGraph();
-		String info = game.toString();
-		System.out.println(game.getGraph());
-		System.out.println(info);
+	//	String info = game.toString();
+	//	System.out.println(game.getGraph());
+	//	System.out.println(info);
 		DGraph gg = new DGraph();
 		gg.init(g);
 		game.addRobot(0);
 		game.addRobot(1);
-		System.out.println(game.getFruits());
-		System.out.println(game.getRobots());
-		game.move();
+
+	//	System.out.println(game.getFruits());
+	//	System.out.println(game.getRobots());
 		
-		System.out.println(g);
+		
+		//System.out.println(g);
 		
 		// the list of fruits should be considered in your solution
 		Iterator<String> f_iter = game.getFruits().iterator();
@@ -70,7 +71,9 @@ public class SimpleGameClient {
 			long t = game.timeToEnd();
 			//System.out.println("round: "+i+"  seconds to end:"+(t/1000));
 			List<String> log = game.move();
+	
 			if(log!=null) {
+				
 				String robot_json = log.get(0);
 			//	System.out.println(robot_json);
 				JSONObject line;
