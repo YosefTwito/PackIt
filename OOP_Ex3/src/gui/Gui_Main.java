@@ -3,6 +3,9 @@ package gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.JFrame;
+import javax.swing.JOptionPane;
+
 import Server.Game_Server;
 import Server.game_service;
 import dataStructure.*;
@@ -41,14 +44,28 @@ public class Gui_Main {
 
 	public static void main(String[] args) {
 
-		////////////////////////////////// ToDo generic - later.///////////////////////////////////////////
-		game_service game = Game_Server.getServer(4); // this is where we get the user input too know what game to play [0,23];
-		game.addRobot(0);
-		game.addRobot(1);
-		game.addRobot(2);
+		JFrame chooseGameNum = new JFrame();
+		boolean WeCanStart = true;
+		int gameNum = -1;
+		try { // this is where we get the user input too know what game to play [0,23]
+			while (gameNum < 0 || gameNum >23) {
+				String howMany = JOptionPane.showInputDialog(chooseGameNum,"Hello, please choose Map out of our 24 Options \n                  Enter a number between 0-23 :");
+				gameNum = Integer.parseInt(howMany);
+				if (gameNum <= 23 && gameNum >=0) break;
+				JOptionPane.showMessageDialog(chooseGameNum, "You've entered illegal Map number");
+			}
+
+		} catch (Exception e) {
+			WeCanStart=false;
+			JOptionPane.showMessageDialog(chooseGameNum, "Error - You did not enter a number");
+		}
+		
+		game_service game = Game_Server.getServer(gameNum);
+		game.addRobot(0); game.addRobot(1); game.addRobot(2); game.addRobot(3); game.addRobot(4);
 		String str = game.getGraph(); // graph as string.
 		DGraph g = new DGraph();
 		
+		//init the graph from json for the game.
 		g.init(str);
 
 		//add objects parameters to GraphGui:
@@ -73,27 +90,21 @@ public class Gui_Main {
 		});
 
 		//Init gui
-		GraphGui a = new GraphGui(g, fr, rob, size,mg);
+		GraphGui a = new GraphGui(g, fr, size ,mg);
 		//Let the Show Begin !
 		a.setVisible(true);
+		
 		while(mg.game.isRunning()) {
 			try {
 				Thread.sleep(100);
 				a.mg.upDate();
-				a.mg.update();
 				System.out.println(mg.Score(rob));
-				a.repaint();
-				
-			} catch (InterruptedException e) {
-				
-				e.printStackTrace();
-			}
+				a.repaint();			
+			} catch (InterruptedException e) {e.printStackTrace();}
 			//System.out.println(mg.game.timeToEnd());
 		}
-		
-		
-		
-
+		JFrame showScore = new JFrame();
+		JOptionPane.showMessageDialog(showScore, "Your score is: ***gotta add****");
 	}
 }
 

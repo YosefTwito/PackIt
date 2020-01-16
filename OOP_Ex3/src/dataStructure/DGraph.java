@@ -29,14 +29,29 @@ public class DGraph implements graph,Serializable{
 		this.edgesCounter=0;
 		this.MC=0;
 	}
+	
+	//deep copy.
+	public DGraph(DGraph G) {
+		this.nodesMap.putAll(G.nodesMap);
+		this.edgesMap.putAll(G.edgesMap);
+		this.MC=G.MC;
+		this.edgesCounter=G.edgesCounter;
+	}
+	
+	public void addListener(GraphListener listener){this.listener = listener;}
+	
+	public void updateListener(){if(listener != null)listener.graphUpdater();}
+	
+	/**
+	 * init graph from json
+	 * @param g
+	 */
 	public void init(String g) {
-		//JSONParser parser = new JSONParser();
-
+		
 		try {
 			JSONObject jobj = new JSONObject(g);
 			JSONArray Jedges = jobj.getJSONArray("Edges");
-			JSONArray Jnodes = jobj.getJSONArray("Nodes");
-			
+			JSONArray Jnodes = jobj.getJSONArray("Nodes");	
 
 			for (int i = 0; i < Jnodes.length(); i++) {
 				JSONObject nody= (JSONObject) Jnodes.get(i);
@@ -59,27 +74,10 @@ public class DGraph implements graph,Serializable{
 			}
 		}
 		catch (Exception e) {
-			//e.printStackTrace();
-			System.out.println("catch");
+			e.printStackTrace();
 		} 
 	}
 	
-	public void addListener(GraphListener listener){
-		this.listener = listener;
-	}
-	
-	public void updateListener(){
-		if(listener != null)
-			listener.graphUpdater();
-	}
-
-	//deep copy.
-	public DGraph(DGraph G) {
-		this.nodesMap.putAll(G.nodesMap);
-		this.edgesMap.putAll(G.edgesMap);
-		this.MC=G.MC;
-		this.edgesCounter=G.edgesCounter;
-	}
 
 	//Methods:
 	@Override
