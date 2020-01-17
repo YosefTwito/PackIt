@@ -61,7 +61,7 @@ public class Gui_Main {
 
 
 		game_service game = Game_Server.getServer(gameNum);
-		game.addRobot(5);
+		game.addRobot(0);game.addRobot(1);game.addRobot(2);game.addRobot(3);game.addRobot(4);
 		String str = game.getGraph(); // graph as string.
 		DGraph g = new DGraph();
 
