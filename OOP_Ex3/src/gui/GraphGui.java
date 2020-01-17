@@ -29,7 +29,7 @@ import utils.*;
 public class GraphGui extends JFrame implements ActionListener, GraphListener{
 
 	private static final long serialVersionUID = 1L;
-	MyGame mg;
+	public MyGame mg;
 	graph gr;
 	ArrayList<Robot> robots;
 	ArrayList<Fruit> fruits;
@@ -70,14 +70,14 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		double res = ((data - r_min) / (r_max-r_min)) * (t_max - t_min) + t_min;
 		return res;
 	}
-
+	
 
 
 	public void paint(Graphics d) {
 		super.paint(d);
 		
 	//	synchronized(this.mg) {
-
+		
 			if (gr != null && gr.nodeSize()>=1) {
 				//get nodes
 				Collection<node_data> nodes = gr.getV();

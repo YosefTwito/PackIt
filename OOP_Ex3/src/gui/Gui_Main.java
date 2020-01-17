@@ -3,6 +3,7 @@ package gui;
 import java.util.ArrayList;
 import java.util.HashMap;
 
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 
@@ -43,28 +44,27 @@ public class Gui_Main {
 	}
 
 	public static void main(String[] args) {
-
-		JFrame chooseGameNum = new JFrame();
-		boolean WeCanStart = true;
-		int gameNum = -1;
-		try { // this is where we get the user input too know what game to play [0,23]
-			while (gameNum < 0 || gameNum >23) {
-				String howMany = JOptionPane.showInputDialog(chooseGameNum,"Hello, please choose Map out of our 24 Options \n                  Enter a number between 0-23 :");
-				gameNum = Integer.parseInt(howMany);
-				if (gameNum <= 23 && gameNum >=0) break;
-				JOptionPane.showMessageDialog(chooseGameNum, "You've entered illegal Map number");
-			}
-
-		} catch (Exception e) {
-			WeCanStart=false;
-			JOptionPane.showMessageDialog(chooseGameNum, "Error - You did not enter a number");
-		}
 		
+		ImageIcon robo = new ImageIcon("robotB.png");
+		// Set the game Level - [0,23]
+		String[] options = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
+		int gameNum = JOptionPane.showOptionDialog(null, "Choose the Level you would like to display", "Click a button",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
+		if (gameNum<0) gameNum=0;
+		System.out.println(gameNum);
+		// Set the game mode - Manual/Automate
+		String[] Mode = {"Automate", "Manual"};
+		int ModeNum = JOptionPane.showOptionDialog(null, "Choose the Mode you would like to display", "Click a button",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, Mode, Mode[0]);
+		if (ModeNum<0) ModeNum=0;
+		System.out.println(ModeNum);
+
+
 		game_service game = Game_Server.getServer(gameNum);
-		game.addRobot(5); game.addRobot(1); game.addRobot(2); game.addRobot(3); game.addRobot(4);
+		game.addRobot(5);
 		String str = game.getGraph(); // graph as string.
 		DGraph g = new DGraph();
-		
+
 		//init the graph from json for the game.
 		g.init(str);
 
@@ -75,12 +75,12 @@ public class Gui_Main {
 		if (fr != null) {
 			for (int i=0; i<fr.size(); i++) {
 				fr.get(i).from = mg.fruitToEdge(fr.get(i), g).getSrc();
-				fr.get(i).to = mg.fruitToEdge(fr.get(i), g).getDest();
+				fr.get(i).to   = mg.fruitToEdge(fr.get(i), g).getDest();
 			}
 		}
 		//get robots.
 		ArrayList<Robot> rob = mg.robo_list;
-		
+
 		//relocate nodes to valid coordination.
 		double [] size = scaleHelper(g.nodesMap);
 		g.nodesMap.forEach((k, v) -> {
@@ -96,24 +96,19 @@ public class Gui_Main {
 		//mg.game.startGame();
 		int i=0;
 		while(mg.game.isRunning()) {
-			
+
 			try {
 				a.mg.updategame(game);
-				System.out.println(mg.game.timeToEnd());
-				Thread.sleep(300);
-				a.mg.upDate();
-				
-				
+				System.out.println(mg.game.timeToEnd()/1000);
+				Thread.sleep(100);
+				a.mg.upDate();		
+
 				a.repaint();	
-				
-				
-			
+
 			} catch (InterruptedException e) {e.printStackTrace();}
-			
 		}
-		JFrame showScore = new JFrame();
-	
-		JOptionPane.showMessageDialog(showScore, a.mg.score);
+		JOptionPane.showMessageDialog(null, a.mg.score);
 	}
 }
+
 
