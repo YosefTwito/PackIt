@@ -54,7 +54,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 	}
 
 
-	public GraphGui(DGraph g, ArrayList<Fruit> fruits, double [] size,MyGame game){
+	public GraphGui(DGraph g, double [] size,MyGame game){
 		g.addListener(this);
 		this.gr = g;
 		this.fruits = game.fru_list;
@@ -71,15 +71,12 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 		return res;
 	}
 
-	private BufferedImage buff;
-	private BufferedImage buff2;
-	private Graphics2D gs;
-	private Graphics2D gs1;
+
 
 	public void paint(Graphics d) {
 		super.paint(d);
 		
-		synchronized(this.mg) {
+	//	synchronized(this.mg) {
 
 			if (gr != null && gr.nodeSize()>=1) {
 				//get nodes
@@ -111,6 +108,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 
 					//draw fruits
 					if (mg.fru_list != null) {
+						
 						if (mg.fru_list.size()>0) {
 							//get icons
 							ImageIcon apple = new ImageIcon("apple.png");
@@ -141,7 +139,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 						if (this.robots.size()>0) {
 							for (int i=0; i< robots.size(); i++) {
 								//reposition to robots
-								Point3D pos = new Point3D((int)scale(robots.get(i).getPos().x(),this.exPos[0],this.exPos[1],50,1230), (int)scale(robots.get(i).getPos().y(),this.exPos[2],this.exPos[3],80,670));
+								Point3D pos = new Point3D((int)scale(mg.robo_list.get(i).getPos().x(),this.exPos[0],this.exPos[1],50,1230), (int)scale(mg.robo_list.get(i).getPos().y(),this.exPos[2],this.exPos[3],80,670));
 								//draw
 								d.drawImage(robocop.getImage(), pos.ix()-10, pos.iy()-13, pos.ix()+10, pos.iy()+13, 0, 0, 500, 500, null);
 
@@ -150,7 +148,7 @@ public class GraphGui extends JFrame implements ActionListener, GraphListener{
 					}		
 				}	
 			}
-		}
+	//	}
 		}
 	
 

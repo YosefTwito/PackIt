@@ -61,7 +61,7 @@ public class Gui_Main {
 		}
 		
 		game_service game = Game_Server.getServer(gameNum);
-		game.addRobot(0); game.addRobot(1); game.addRobot(2); game.addRobot(3); game.addRobot(4);
+		game.addRobot(5); game.addRobot(1); game.addRobot(2); game.addRobot(3); game.addRobot(4);
 		String str = game.getGraph(); // graph as string.
 		DGraph g = new DGraph();
 		
@@ -90,21 +90,30 @@ public class Gui_Main {
 		});
 
 		//Init gui
-		GraphGui a = new GraphGui(g, fr, size ,mg);
+		GraphGui a = new GraphGui(g,size ,mg);
 		//Let the Show Begin !
 		a.setVisible(true);
-		
+		//mg.game.startGame();
+		int i=0;
 		while(mg.game.isRunning()) {
+			
 			try {
-				Thread.sleep(100);
+				a.mg.updategame(game);
+				System.out.println(mg.game.timeToEnd());
+				Thread.sleep(300);
 				a.mg.upDate();
-				System.out.println(mg.Score(rob));
-				a.repaint();			
+				
+				
+				a.repaint();	
+				
+				
+			
 			} catch (InterruptedException e) {e.printStackTrace();}
-			//System.out.println(mg.game.timeToEnd());
+			
 		}
 		JFrame showScore = new JFrame();
-		JOptionPane.showMessageDialog(showScore, mg.Score(mg.robo_list));
+	
+		JOptionPane.showMessageDialog(showScore, a.mg.score);
 	}
 }
 

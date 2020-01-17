@@ -31,11 +31,12 @@ public class MyGame {
 	public graph graph;
 	public ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
 	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
+	public double score=0;
 
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(23); // this is where we get the user input too know what game to play [0,23];
+		game_service game = Game_Server.getServer(12); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
@@ -68,6 +69,10 @@ public class MyGame {
 	public MyGame() {
 		graph=null;
 		this.game=null;
+	}
+	
+	public void updategame(game_service game) {
+		this.game=game;
 	}
 	
 	private void fetchRobots() {
@@ -142,6 +147,7 @@ public class MyGame {
 			}
 			
 		}
+		
 	}
 	
 	
@@ -216,16 +222,16 @@ public class MyGame {
 		String ans ="";
 		int total=0;
 		for(int i=0;i<al.size();i++) {
+			total+=al.get(i).value;
 			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
 			ans+="\n";
+			this.score=total;
 		}
-		int i=0;
-		while(i<al.size()) {
-			total+=al.get(i).value;
-		}
-		ans+="Total score is"+total+"points";
+		
+		System.out.println("Final Score is"+score);
 		return ans;
 	}
+
 	/**
 	 * Calculates the edge that contains the fruit based on their location.
 	 * based on the Triangle Equivalence
@@ -258,7 +264,10 @@ public class MyGame {
 		return false;
 	}
 	
+
+	
 	public void upDate() {
+		
 		
 		robo_list.clear();
 		
@@ -288,8 +297,8 @@ public class MyGame {
 					int speed = jrobots.getInt("speed");
 					Robot r = new Robot(rid,src,dest,p,val,speed);
 					robo_list.add(r);
-					//if(close(r)) update();
-					//update();
+					
+					
 					
 					
 					
@@ -297,9 +306,14 @@ public class MyGame {
 				}
 				
 				for(Robot r:robo_list) {
+					
+					
 					if(r.dest==-1) {
+						update();
+						System.out.println(Score(robo_list));
 						r.setDest(nextNode(graph, r.src));
 						game.chooseNextEdge(r.id, r.dest);
+						
 					}
 					
 					
@@ -316,8 +330,9 @@ public class MyGame {
 
 	}
 	public void update() {
-		
+		fru_list.clear();
 		List<String> log = game.getFruits();
+		System.out.println(log);
 		
 		if(log!=null) {
 			String fru_json = log.toString();

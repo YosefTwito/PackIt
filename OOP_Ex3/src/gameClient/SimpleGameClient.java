@@ -45,27 +45,29 @@ public class SimpleGameClient {
 	public static void test1() {
 		game_service game = Game_Server.getServer(23); // you have [0,23] games
 		String g = game.getGraph();
+		
 	//	String info = game.toString();
 	//	System.out.println(game.getGraph());
 	//	System.out.println(info);
 		DGraph gg = new DGraph();
 		gg.init(g);
-		game.addRobot(0);
+		int src_node = 0;  // arbitrary node, you should start at one of the fruits
+		game.addRobot(src_node);
+		
 		game.addRobot(1);
 		
-
-	//	System.out.println(game.getFruits());
-	//	System.out.println(game.getRobots());
+		
+		System.out.println(game.getFruits());
+		System.out.println(game.getRobots());
 		
 		
 		//System.out.println(g);
 		
 		// the list of fruits should be considered in your solution
-		Iterator<String> f_iter = game.getFruits().iterator();
-		while(f_iter.hasNext()) {System.out.println(f_iter.next());}
+		//Iterator<String> f_iter = game.getFruits().iterator();
+		//while(f_iter.hasNext()) {System.out.println(f_iter.next());}
 		
-		int src_node = 0;  // arbitrary node, you should start at one of the fruits
-		game.addRobot(src_node);
+		
 		game.startGame();
 		int i=0;
 		while(game.isRunning()) {
@@ -87,7 +89,7 @@ public class SimpleGameClient {
 					
 				
 					if(dest==-1) {	
-						System.out.println(game.getFruits());
+						
 						dest = nextNode(gg, src);
 						
 						game.chooseNextEdge(rid, dest);
