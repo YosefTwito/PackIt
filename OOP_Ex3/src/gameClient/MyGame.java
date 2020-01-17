@@ -214,10 +214,16 @@ public class MyGame {
 	
 	public String Score(ArrayList<Robot> al){
 		String ans ="";
+		int total=0;
 		for(int i=0;i<al.size();i++) {
 			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
 			ans+="\n";
 		}
+		int i=0;
+		while(i<al.size()) {
+			total+=al.get(i).value;
+		}
+		ans+="Total score is"+total+"points";
 		return ans;
 	}
 	/**

@@ -104,7 +104,7 @@ public class Gui_Main {
 			//System.out.println(mg.game.timeToEnd());
 		}
 		JFrame showScore = new JFrame();
-		JOptionPane.showMessageDialog(showScore, "Your score is: ***gotta add****");
+		JOptionPane.showMessageDialog(showScore, mg.Score(mg.robo_list));
 	}
 }
 
