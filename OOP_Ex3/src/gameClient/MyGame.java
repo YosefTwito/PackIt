@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import Server.*;
+import algorithms.Graph_Algo;
 import dataStructure.*;
 import gui.*;
 import utils.Point3D;
@@ -35,7 +36,7 @@ public class MyGame {
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(12); // this is where we get the user input too know what game to play [0,23];
+		game_service game = Game_Server.getServer(14); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
@@ -53,7 +54,10 @@ public class MyGame {
 		
 		System.out.println(game.getFruits());
 		MyGame mg = new MyGame(gg,game);
-		
+		System.out.println(mg.startHere());
+		System.out.println(gg.edgeSize());
+		System.out.println(gg.nodeSize());
+		System.out.println(gg.getNode(42).getWeight());
 	
 		
 		
@@ -161,32 +165,40 @@ public class MyGame {
 		ans = itr.next().getDest();
 		return ans;
 	}
-	private int startHere(graph g,int src) {
-		int ans=0;
-		double temp=0;
-		if(g.edgeSize()<30) {
-			for(Fruit f:fru_list) {
-				if(f.value>temp) {
-					ans=f.from;
-					temp=f.value;
-				}
-				
-			}
-			return ans;
+	public void goNext(Robot r) {
+		Fruit f = topFruit();
+		edge_data ed = fruitToEdge(f,graph);
+		Graph_Algo ga = new Graph_Algo(graph);
+		List<node_data> t_nd=ga.shortestPath(r.src, ed.getSrc());
+		for(node_data nd:t_nd) {
+			game.chooseNextEdge(r.id, nd.getKey());
 		}
-		else  {
-			for(node_data nd:g.getV()) {
-				int s= g.getE(nd.getKey()).size();
-				if(s>temp) {
-					ans=nd.getKey();
-					temp=s;
-				}
-				
-			}
-		}
-		return ans;
 		
 	}
+	
+	private int startHere() {
+
+		int k = graph.nodeSize();
+		return (int)(Math.random()*k+1);
+	}
+	
+	private Fruit topFruit() {
+		Fruit fru = null;
+		double temp=0;
+		for(Fruit f:fru_list) {
+			
+			if(f.value>temp) {
+				temp = f.value;
+				fru = f;
+				
+			}
+			
+		}
+		return fru;
+	}
+				
+
+	
 	/**
 	 * checks if the robot can go to the selected node
 	 * @param r robot
