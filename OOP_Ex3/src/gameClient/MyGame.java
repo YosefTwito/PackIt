@@ -264,8 +264,6 @@ public class MyGame {
 		return false;
 	}
 	
-
-	
 	public void upDate() {
 		
 		
