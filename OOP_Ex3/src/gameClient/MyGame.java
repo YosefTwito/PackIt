@@ -188,15 +188,26 @@ public class MyGame {
 		return ans;
 		
 	}
+	/**
+	 * checks if the robot can go to the selected node
+	 * @param r robot
+	 * @param src node of the robot
+	 * @param dest node of the robot
+	 * @return
+	 */
 	
 	
-	private static int nextNodeManual(graph g, int src,int dest) {
-		if(g.getNode(dest)==null) return -1;
-		int ans = -1;
-		Collection<edge_data> ee = g.getE(src);
+	public boolean nextNodeManual(Robot r,int src,int dest) {
+		if(graph.getNode(dest)==null) return false;
+		boolean ans = false;
+		Collection<edge_data> ee = graph.getE(src);
 		for(edge_data e:ee) {
-			if(e==null) return -1;
-			if(e.getDest()==g.getNode(dest).getKey()) return 1;
+			if(e==null) return false;
+			if(e.getDest()==graph.getNode(dest).getKey()) {
+				r.setDest(nextNode(graph, r.src));
+				game.chooseNextEdge(r.id, r.dest);
+				return true;
+			}
 		}
 		return ans;
 	
