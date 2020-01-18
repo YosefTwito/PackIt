@@ -33,8 +33,8 @@ public class BasicDoubleBufferSwing {
 		DGraph oldGR = new DGraph(); // for fruits location.
 		DGraph gr;
 		MyGame game;
+		game_service gs;
 		double[] size;
-		game_service cheat;
 
 		private void start_game() {
 			// Logo for options-dialog
@@ -44,19 +44,20 @@ public class BasicDoubleBufferSwing {
 			String[] options = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
 			int gameNum = JOptionPane.showOptionDialog(null, "Choose the Level you would like to display", "Click a button",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
-			if (gameNum<0) gameNum=0;
+			if (gameNum<0) gameNum=0;//in case user don't pick and press x
 
 			// Set the game mode - Manual/Automate
 			String[] Mode = {"Automate", "Manual"};
 			int ModeNum = JOptionPane.showOptionDialog(null, "Choose the Mode you would like to display", "Click a button",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, Mode, Mode[0]);
-			if (ModeNum<0) ModeNum=0;
+			if (ModeNum<0) ModeNum=0;//in case user don't pick and press x
 
 			//Creating new game server
 			game_service game = Game_Server.getServer(gameNum);
-			this.cheat = game;
-			//Adding robots.
-			game.addRobot(0);game.addRobot(1);game.addRobot(2);game.addRobot(3);game.addRobot(4);
+			this.gs=game;
+			MyGame mg = new MyGame(gr, game);
+			this.game=mg;
+			
 			String str = game.getGraph(); // graph as string.
 			DGraph gr = new DGraph();
 			//initialize the graph from json for the game.
@@ -72,8 +73,7 @@ public class BasicDoubleBufferSwing {
 			});
 			this.gr=gr;
 
-			MyGame mg = new MyGame(gr, game);
-			this.game=mg;
+
 			//Let the Show begin
 			mg.game.startGame();
 		}
@@ -182,6 +182,9 @@ public class BasicDoubleBufferSwing {
 					}
 				}
 			}
+			//Adding robots.
+			gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());
+
 			//draw robots
 			if (game.robo_list !=null) {
 				//get icon
