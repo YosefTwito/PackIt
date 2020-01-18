@@ -24,7 +24,6 @@ import utils.Point3D;
  * another is manual-play where we decide where to point the robot.
  * the class also has algorithms to play the auto-player.
  * @author Eldar and Yossi
- *
  */
 public class MyGame {
 	public game_service game;
