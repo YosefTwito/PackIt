@@ -30,7 +30,7 @@ public class BasicDoubleBufferSwing {
 
 	public static class Canvas extends JPanel {
 
-		DGraph oldGR = new DGraph(); // for fruits location
+		DGraph oldGR = new DGraph(); // for fruits location.
 		DGraph gr;
 		MyGame game;
 		double[] size;
