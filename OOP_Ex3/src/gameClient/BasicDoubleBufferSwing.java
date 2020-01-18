@@ -33,8 +33,8 @@ public class BasicDoubleBufferSwing {
 		DGraph oldGR = new DGraph(); // for fruits location.
 		DGraph gr;
 		MyGame game;
-		game_service gs;
 		double[] size;
+		int GameMode=0;
 
 		private void start_game() {
 			// Logo for options-dialog
@@ -51,13 +51,13 @@ public class BasicDoubleBufferSwing {
 			int ModeNum = JOptionPane.showOptionDialog(null, "Choose the Mode you would like to display", "Click a button",
 					JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, Mode, Mode[0]);
 			if (ModeNum<0) ModeNum=0;//in case user don't pick and press x
-
+			GameMode = ModeNum;
+			
 			//Creating new game server
 			game_service game = Game_Server.getServer(gameNum);
-			this.gs=game;
-			MyGame mg = new MyGame(gr, game);
-			this.game=mg;
 			
+			//Adding robots.
+			game.addRobot(0);game.addRobot(1);game.addRobot(2);game.addRobot(3);game.addRobot(4);
 			String str = game.getGraph(); // graph as string.
 			DGraph gr = new DGraph();
 			//initialize the graph from json for the game.
@@ -73,7 +73,8 @@ public class BasicDoubleBufferSwing {
 			});
 			this.gr=gr;
 
-
+			MyGame mg = new MyGame(gr, game);
+			this.game=mg;
 			//Let the Show begin
 			mg.game.startGame();
 		}
@@ -182,9 +183,6 @@ public class BasicDoubleBufferSwing {
 					}
 				}
 			}
-			//Adding robots.
-			gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());gs.addRobot(game.whereToStart());
-
 			//draw robots
 			if (game.robo_list !=null) {
 				//get icon
@@ -210,6 +208,10 @@ public class BasicDoubleBufferSwing {
 						EventQueue.invokeLater(this);
 					} else {
 						if (Canvas.this != null) {
+							/*if (GameMode==1) {
+								String nextS = JOptionPane.showInputDialog(null,"Where would you want to move robot ?");
+								int next = Integer.parseInt(nextS);
+							}*/
 							game.upDate();               	
 							Canvas.this.repaint();                        
 						}
