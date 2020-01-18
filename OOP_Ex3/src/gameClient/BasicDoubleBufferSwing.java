@@ -7,6 +7,7 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +22,7 @@ import Server.Game_Server;
 import Server.game_service;
 import dataStructure.DGraph;
 import dataStructure.edge_data;
+import dataStructure.graph;
 import dataStructure.node_data;
 import utils.Point3D;
 
@@ -28,11 +30,11 @@ public class BasicDoubleBufferSwing {
 
 	public static class Canvas extends JPanel {
 
+		DGraph oldGR = new DGraph(); // for fruits location
 		DGraph gr;
 		MyGame game;
 		double[] size;
 		game_service cheat;
-		boolean on = true;
 
 		private void start_game() {
 			// Logo for options-dialog
@@ -59,7 +61,7 @@ public class BasicDoubleBufferSwing {
 			DGraph gr = new DGraph();
 			//initialize the graph from json for the game.
 			gr.init(str);
-
+			this.oldGR.init(str);
 			//relocate nodes to valid coordination.
 			double [] size = scaleHelper(gr.nodesMap);
 			this.size=size;
@@ -151,16 +153,23 @@ public class BasicDoubleBufferSwing {
 			if (game.fru_list != null) {
 
 				if (game.fru_list.size()>0) {
+					ArrayList<Fruit> fruL = new ArrayList<Fruit>();
+					if(fruL.addAll(game.fru_list)) {
+					for (int i=0; i<fruL.size(); i++) {
+						fruL.get(i).from = game.fruitToEdge(fruL.get(i), oldGR).getSrc();
+						fruL.get(i).to   = game.fruitToEdge(fruL.get(i), oldGR).getDest();
+					}
+					}
 					//get icons
 					ImageIcon apple = new ImageIcon("apple.png");
 					ImageIcon banana = new ImageIcon("banana.png");
 					//draw
 					int srcF, destF;
 					Point3D tempS, tempD;
-					for (int i=0; i<game.fru_list.size(); i++) {
-						srcF = game.fru_list.get(i).from;
-						destF = game.fru_list.get(i).to;
-						if (game.fru_list.get(i).getType()==-1) {
+					for (int i=0; i<fruL.size(); i++) {
+						srcF = fruL.get(i).from;
+						destF = fruL.get(i).to;
+						if (fruL.get(i).getType()==-1) {
 							tempS = this.gr.getNode(srcF).getLocation();
 							tempD = this.gr.getNode(destF).getLocation();
 							g.drawImage(apple.getImage(), (int)((tempS.ix()*0.3)+(0.7*tempD.ix()))-5, (int)((tempS.iy()*0.3)+(0.7*tempD.iy()))-10, (int)((tempS.ix()*0.3)+(0.7*tempD.ix()))+15, (int)((tempS.iy()*0.3)+(0.7*tempD.iy()))+10, 0, 0, 500, 500, null);
