@@ -330,7 +330,8 @@ public class MyGame {
 					if(r.dest==-1) {
 						update();
 						System.out.println(Score(robo_list));
-						goNext(r,graph);	
+						r.dest = nextNode(graph, r.src);
+						game.chooseNextEdge(r.id,r.dest);
 					}	
 				}
 			} catch (JSONException e) {
