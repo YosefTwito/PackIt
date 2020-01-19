@@ -4,6 +4,7 @@ import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.EventQueue;
+import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
@@ -14,7 +15,6 @@ import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Timer;
 
 import javax.swing.ImageIcon;
@@ -22,12 +22,8 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 
-import Server.Game_Server;
-import Server.game_service;
-import dataStructure.DGraph;
-import dataStructure.edge_data;
-import dataStructure.graph;
-import dataStructure.node_data;
+import Server.*;
+import dataStructure.*;
 import utils.Point3D;
 
 public class BasicDoubleBufferSwing {
@@ -86,16 +82,14 @@ public class BasicDoubleBufferSwing {
 
 		private static final long serialVersionUID = 1L;
 
-		private Image offScreenImage = null;
-		private Graphics offScreenGraphics = null;
-		private Image offScreenImageDrawed = null;
-		private Graphics offScreenGraphicsDrawed = null;              
+		private Image offScreenImageDrawed = null;            
 		private Timer timer = new Timer();
 
 		public Canvas() {
 			start_game();  
-			timer.schedule(new AutomataTask(), 0, 40);
-			this.setPreferredSize(new Dimension(1280, 720));               
+			timer.schedule(new AutomataTask(), 0, 100);
+			this.setPreferredSize(new Dimension(1280, 720));
+			
 		}
 
 		/** 
@@ -118,7 +112,7 @@ public class BasicDoubleBufferSwing {
 			// Double-buffer: clear the offscreen image.  
 			offScreenImageDrawed=null;
 			if (offScreenImageDrawed == null) {offScreenImageDrawed = createImage(d.width, d.height);}          
-			offScreenGraphicsDrawed = offScreenImageDrawed.getGraphics();                              
+			                            
 			/////////////////////
 			// Paint Offscreen //
 			/////////////////////
@@ -202,6 +196,12 @@ public class BasicDoubleBufferSwing {
 					}
 				}
 			}
+			//Draw time-to-end and score on the screen
+			g.setColor(Color.BLACK);
+			Font font = new Font("Canterbury", Font.BOLD, 25);
+			g.setFont(font);
+			g.drawString("Time: "+game.game.timeToEnd()/1000+"      -", 470, 28);
+			g.drawString("Score: "+game.score, 643, 28);
 		}
 
 
@@ -213,12 +213,22 @@ public class BasicDoubleBufferSwing {
 						EventQueue.invokeLater(this);
 					} else {
 						if (Canvas.this != null) {
-							/*if (GameMode==1) {
-								String nextS = JOptionPane.showInputDialog(null,"Where would you want to move robot ?");
+							if (GameMode==1) {
+								int count=0;
+								if(count==0) {
+								String nextS = JOptionPane.showInputDialog(null,"Where would you want to move a robot ?");
 								int next = Integer.parseInt(nextS);
-							}*/
-							game.upDate();               	
-							Canvas.this.repaint();                        
+								game.update();
+								for(Robot rob: game.robo_list) {
+									game.nextNodeManual(rob, rob.getSrc(), next);
+								}
+								count++;
+								}
+							}
+							else {
+								game.upDate();               	
+							}  
+							Canvas.this.repaint();  
 						}
 					}     
 				}
@@ -232,7 +242,6 @@ public class BasicDoubleBufferSwing {
 
 		@Override
 		public void mouseClicked(MouseEvent e) {
-			System.out.println("1111111111111111111111");
 			if (GameMode==1) {
 				if(currRbot==null) {
 					for (Robot r: game.robo_list) {
