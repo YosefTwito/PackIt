@@ -59,9 +59,6 @@ public class MyGame {
 		System.out.println(gg.nodeSize());
 		System.out.println(gg.getNode(42).getWeight());
 	
-		
-		
-		
 	}
 	public MyGame(graph g,game_service game) {
 		graph=g;
@@ -73,20 +70,18 @@ public class MyGame {
 		graph=null;
 		this.game=null;
 	}
-	
 	public void updategame(game_service game) {
 		this.game=game;
 	}
-	
-	private void fetchRobots() {
-		
+	/**
+	 * function that parse the json and retracts robotos to array list of robots.
+	 */
+	private void fetchRobots() {	
 		List<String> log = game.getRobots();
 		if(log!=null) {
 			String robot_json = log.toString();
-
 			try {
-				JSONArray line= new JSONArray(robot_json);
-				
+				JSONArray line= new JSONArray(robot_json);	
 				for(int i=0; i< line.length();i++) {
 					
 					JSONObject j= line.getJSONObject(i);
@@ -103,31 +98,23 @@ public class MyGame {
 					double val = jrobots.getDouble("value");
 					int speed = jrobots.getInt("speed");
 					Robot r = new Robot(rid,src,dest,p,val,speed);
-					robo_list.add(r);
-					
-					
+					robo_list.add(r);			
 				}
-			
-
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-		
-		
+			}	
 	}
-		
-	
 }
+	/**
+	 * function that parse the json and retracts the fruits to array list of fruits
+	 */
 	private void fetchFruits() {
 		List<String> log = game.getFruits();
 		if(log!=null) {
 			String fru_json = log.toString();
-
 			try {
-				JSONArray line= new JSONArray(fru_json);
-				
-				
+				JSONArray line= new JSONArray(fru_json);		
 				for(int i =0; i<line.length();i++) {
 					JSONObject j = line.getJSONObject(i);
 					JSONObject fru = j.getJSONObject("Fruit");
@@ -147,12 +134,15 @@ public class MyGame {
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
-			}
-			
+			}	
 		}
-		
 	}
-	
+	/**
+	 * a random walk on the graph
+	 * @param g graph
+	 * @param src src of the robot
+	 * @return the node the robot will head to
+	 */
 	
 	private static int nextNode(graph g, int src) {
 		int ans = -1;
@@ -165,6 +155,11 @@ public class MyGame {
 		ans = itr.next().getDest();
 		return ans;
 	}
+	/**
+	 * more clever approach to decide where to drive the robot.
+	 * will drive the robot to the closet and most valuavle fruit.
+	 * @param r robot
+	 */
 	public void goNext(Robot r) {
 		Fruit f = topFruit();
 		edge_data ed = fruitToEdge(f,graph);
@@ -175,13 +170,16 @@ public class MyGame {
 		}
 		
 	}
+	/**
+	 * calculates where is the best point to start the game from.
+	 * @return the node its best to start in
+	 */
 	
 	private int startHere() {
 
 		int k = graph.nodeSize();
 		return (int)(Math.random()*k+1);
 	}
-	
 	private Fruit topFruit() {
 		Fruit fru = null;
 		double temp=0;
@@ -189,16 +187,11 @@ public class MyGame {
 			
 			if(f.value>temp) {
 				temp = f.value;
-				fru = f;
-				
-			}
-			
+				fru = f;	
+			}			
 		}
 		return fru;
 	}
-				
-
-	
 	/**
 	 * checks if the robot can go to the selected node
 	 * @param r robot
@@ -206,8 +199,6 @@ public class MyGame {
 	 * @param dest node of the robot
 	 * @return
 	 */
-	
-	
 	public boolean nextNodeManual(Robot r,int src,int dest) {
 		if(graph.getNode(dest)==null) return false;
 		boolean ans = false;
@@ -239,7 +230,12 @@ public class MyGame {
 	private boolean isRunning() {
 		return game.isRunning();
 	}
-	
+	/**
+	 * calcualtes the score of each robot 
+	 * also prints the combined score
+	 * @param al array list of the robots
+	 * @return string that shows each robot and its score
+	 */
 	public String Score(ArrayList<Robot> al){
 		String ans ="";
 		int total=0;
@@ -286,17 +282,17 @@ public class MyGame {
 		return false;
 	}
 	
+	/**
+	 * updates the robot list constantly so the robot location and score would update
+	 * while the game is running.
+	 * fetches the data from the server and updates the robo list.
+	 */	
 	public void upDate() {
-		
-		
 		robo_list.clear();
 		
 		List<String> log = game.move();	
-		
 		if(log!=null) {
-			
 			String robot_json = log.toString();
-
 			try {
 				JSONArray line= new JSONArray(robot_json);
 				
@@ -317,38 +313,27 @@ public class MyGame {
 					int speed = jrobots.getInt("speed");
 					Robot r = new Robot(rid,src,dest,p,val,speed);
 					robo_list.add(r);
-					
-					
-					
-					
-					
-					
+
 				}
 				
-				for(Robot r:robo_list) {
-					
-					
+				for(Robot r:robo_list) {	
 					if(r.dest==-1) {
 						update();
 						System.out.println(Score(robo_list));
 						r.setDest(nextNode(graph, r.src));
-						game.chooseNextEdge(r.id, r.dest);
-						
-					}
-					
-					
+						game.chooseNextEdge(r.id, r.dest);	
+					}	
 				}
-				
-
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
-		
 		}
-
 	}
+	/**
+	 * updates the fruit list constantly while the game is running.
+	 * fetches the data from the server
+	 */
 	public void update() {
 		fru_list.clear();
 		List<String> log = game.getFruits();
@@ -358,9 +343,7 @@ public class MyGame {
 			String fru_json = log.toString();
 
 			try {
-				JSONArray line= new JSONArray(fru_json);
-				
-				
+				JSONArray line= new JSONArray(fru_json);		
 				for(int i =0; i<line.length();i++) {
 					JSONObject j = line.getJSONObject(i);
 					JSONObject fru = j.getJSONObject("Fruit");
@@ -383,35 +366,7 @@ public class MyGame {
 			}
 			
 		}
-			
-		
+
 	}
-	public int whereToStart() {
-		int ans=0;
-		double temp=0;
-		for(node_data nd : graph.getV()) {
-			for(edge_data ed: graph.getE(nd.getKey())) {
-				for(Fruit f:fru_list) {
-					if(f.from==ed.getSrc() && f.to==ed.getDest()) {
-						if(f.value>temp) {
-							ans=f.from;
-							temp=f.value;
-						}
-					}
-				}
-			}
-		}
-		return ans;
-	}
-		
-		
-	
-	
-	
-	
-	
+
 }
-	
-	
-
-
