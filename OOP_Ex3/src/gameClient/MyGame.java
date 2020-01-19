@@ -173,6 +173,7 @@ public class MyGame {
 		
 		System.out.println(f.from);
 		List<node_data>arr = ga.shortestPath(r.src, f.from);
+		arr.add(g.getNode(f.to));
 		for(node_data temp:arr) {
 			game.chooseNextEdge(r.id, temp.getKey());
 		}
