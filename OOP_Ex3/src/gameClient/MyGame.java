@@ -1,5 +1,6 @@
 package gameClient;
 import java.awt.event.MouseEvent;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
@@ -32,6 +33,7 @@ public class MyGame {
 	public ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
 	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 	public double score=0;
+	private static KML_Logger kml=new KML_Logger();
 
 
 
@@ -298,7 +300,14 @@ public class MyGame {
 	 * fetches the data from the server and updates the robo list.
 	 */	
 	public void upDate() {
+		try {
+			kml.make_kml(this,0);
+		} catch (ParseException | InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		robo_list.clear();
+
 		
 		List<String> log = game.move();	
 		if(log!=null) {
@@ -326,12 +335,15 @@ public class MyGame {
 
 				}
 				
-				for(Robot r:robo_list) {	
+				for(Robot r:robo_list) {
+	
 					if(r.dest==-1) {
 						update();
 						System.out.println(Score(robo_list));
 						r.dest = nextNode(graph, r.src);
 						game.chooseNextEdge(r.id,r.dest);
+						
+						
 					}	
 				}
 			} catch (JSONException e) {

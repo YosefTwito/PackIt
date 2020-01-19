@@ -12,6 +12,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -24,6 +25,7 @@ import javax.swing.JPanel;
 
 import Server.*;
 import dataStructure.*;
+import de.micromata.opengis.kml.v_2_2_0.Kml;
 import utils.Point3D;
 
 public class MyGameGUI {
@@ -37,6 +39,11 @@ public class MyGameGUI {
 		double[] size;
 		int GameMode=0;
 		Robot currRbot;
+		private static KML_Logger kml=new KML_Logger();
+		
+		
+		
+		
 
 		private void start_game() {
 			// Logo for options-dialog
@@ -79,6 +86,9 @@ public class MyGameGUI {
 			this.game=mg;
 			//Let the Show begin
 			mg.game.startGame();
+
+			
+			
 		}
 
 		private static final long serialVersionUID = 1L;
@@ -207,6 +217,7 @@ public class MyGameGUI {
 
 
 		private class AutomataTask extends java.util.TimerTask {
+			
 			public void run() {
 				// Run thread on event dispatching thread
 				if (game.game.isRunning()) {
@@ -214,6 +225,7 @@ public class MyGameGUI {
 						EventQueue.invokeLater(this);
 					} else {
 						if (Canvas.this != null) {
+						
 							if (GameMode==1) {
 								int count=0;
 								if(count==0) {
@@ -234,7 +246,13 @@ public class MyGameGUI {
 					}     
 				}
 				else {
-					JOptionPane.showMessageDialog(null, "                  Game Over ! \n           Your Score is: "+game.score);
+					//JOptionPane.showMessageDialog(null, "                  Game Over ! \n           Your Score is: "+game.score);
+					try {
+						kml.make_kml(game,1);
+					} catch (ParseException | InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					this.cancel();
 				}
 			}
@@ -331,6 +349,7 @@ public class MyGameGUI {
 		frame.pack();
 		frame.setIconImage(new ImageIcon("Rocket.png").getImage());
 		frame.setVisible(true); 
+		
 	}
 
 }
