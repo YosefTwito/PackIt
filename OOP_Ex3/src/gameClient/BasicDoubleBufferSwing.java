@@ -7,6 +7,10 @@ import java.awt.EventQueue;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,13 +32,14 @@ import utils.Point3D;
 
 public class BasicDoubleBufferSwing {
 
-	public static class Canvas extends JPanel {
+	public static class Canvas extends JPanel implements ActionListener, MouseListener {
 
 		DGraph oldGR = new DGraph(); // for fruits location.
 		DGraph gr;
 		MyGame game;
 		double[] size;
 		int GameMode=0;
+		Robot currRbot;
 
 		private void start_game() {
 			// Logo for options-dialog
@@ -52,10 +57,10 @@ public class BasicDoubleBufferSwing {
 					JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, Mode, Mode[0]);
 			if (ModeNum<0) ModeNum=0;//in case user don't pick and press x
 			GameMode = ModeNum;
-			
+
 			//Creating new game server
 			game_service game = Game_Server.getServer(gameNum);
-			
+
 			//Adding robots.
 			game.addRobot(0);game.addRobot(1);game.addRobot(2);game.addRobot(3);game.addRobot(4);
 			String str = game.getGraph(); // graph as string.
@@ -156,10 +161,10 @@ public class BasicDoubleBufferSwing {
 				if (game.fru_list.size()>0) {
 					ArrayList<Fruit> fruL = new ArrayList<Fruit>();
 					if(fruL.addAll(game.fru_list)) {
-					for (int i=0; i<fruL.size(); i++) {
-						fruL.get(i).from = game.fruitToEdge(fruL.get(i), oldGR).getSrc();
-						fruL.get(i).to   = game.fruitToEdge(fruL.get(i), oldGR).getDest();
-					}
+						for (int i=0; i<fruL.size(); i++) {
+							fruL.get(i).from = game.fruitToEdge(fruL.get(i), oldGR).getSrc();
+							fruL.get(i).to   = game.fruitToEdge(fruL.get(i), oldGR).getDest();
+						}
 					}
 					//get icons
 					ImageIcon apple = new ImageIcon("apple.png");
@@ -222,7 +227,51 @@ public class BasicDoubleBufferSwing {
 					this.cancel();
 				}
 			}
-		}        
+		}
+
+
+		@Override
+		public void mouseClicked(MouseEvent e) {
+			System.out.println("1111111111111111111111");
+			if (GameMode==1) {
+				if(currRbot==null) {
+					for (Robot r: game.robo_list) {
+						Point3D p = new Point3D(e.getX(),e.getY());
+						if (r.pos.distance2D(p)< 15) {
+							currRbot = r;
+							
+						}
+					}
+				}
+				else {
+					for (node_data n : gr.getV()) {
+						Point3D p = new Point3D(e.getX(),e.getY());
+						if (n.getLocation().distance2D(p)<15) {
+							game.nextNodeManual(currRbot, currRbot.getSrc(), n.getKey());
+						}
+					}
+				}
+			}
+		}
+
+		@Override
+		public void mousePressed(MouseEvent e) {}
+
+		@Override
+		public void mouseReleased(MouseEvent e) {}
+
+		@Override
+		public void mouseEntered(MouseEvent e) {}
+
+		@Override
+		public void mouseExited(MouseEvent e) {}
+
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			// TODO Auto-generated method stub
+			
+		}   
+
 	}
 
 

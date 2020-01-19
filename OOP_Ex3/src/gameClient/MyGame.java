@@ -175,7 +175,7 @@ public class MyGame {
 	 * @return the node its best to start in
 	 */
 	
-	private int startHere() {
+	public int startHere() {
 
 		int k = graph.nodeSize();
 		return (int)(Math.random()*k+1);
@@ -206,8 +206,8 @@ public class MyGame {
 		for(edge_data e:ee) {
 			if(e==null) return false;
 			if(e.getDest()==graph.getNode(dest).getKey()) {
-				r.setDest(nextNode(graph, r.src));
-				game.chooseNextEdge(r.id, r.dest);
+				//r.setDest(nextNode(graph, r.src));
+				game.chooseNextEdge(r.id, dest);
 				return true;
 			}
 		}
