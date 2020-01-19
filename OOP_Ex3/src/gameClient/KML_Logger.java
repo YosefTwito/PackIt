@@ -3,12 +3,7 @@ package gameClient;
 import de.micromata.opengis.kml.v_2_2_0.*;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
 
-import utils.Point3D;
-import utils.StdDraw;
-
-import javax.swing.*;
 import java.io.File;
-import java.sql.Time;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
