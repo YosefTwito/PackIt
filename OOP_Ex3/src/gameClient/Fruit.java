@@ -28,6 +28,13 @@ public class Fruit {
 	public Fruit() {
 		
 	}
+	public Fruit(Fruit f) {
+		this.from=f.from;
+		this.to=f.to;
+		this.pos=f.pos;
+		this.type=f.type;
+		this.value=f.value;
+	}
 
 	public int getType() { return this.type; }
 	public void setPos(Point3D np) { this.pos = np; }

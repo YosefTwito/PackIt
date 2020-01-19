@@ -36,7 +36,7 @@ public class MyGame {
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(6); // this is where we get the user input too know what game to play [0,23];
+		game_service game = Game_Server.getServer(7); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
@@ -54,9 +54,14 @@ public class MyGame {
 		
 		System.out.println(game.getFruits());
 		MyGame mg = new MyGame(gg,game);
-		System.out.println(mg.startHere());
-		System.out.println(gg.edgeSize());
-		System.out.println(gg.nodeSize());
+		
+		Fruit f = mg.topFruit();
+		Robot r = mg.robo_list.get(0);
+		System.out.println(f.from);
+		mg.goNext(r, gg);
+		mg.upDate();
+		
+	
 		
 	
 	}
@@ -128,7 +133,7 @@ public class MyGame {
 					int type = fru.getInt("type");
 					Fruit f = new Fruit(value,type,p);
 					fru_list.add(f);
-					
+					fruitToEdge(f,graph);
 				}
 
 			} catch (JSONException e) {
@@ -160,15 +165,16 @@ public class MyGame {
 	 * will drive the robot to the closet and most valuable fruit.
 	 * @param r robot
 	 */
-	public void goNext(Robot r) {
+	public void goNext(Robot r,graph g) {
 		Fruit f = topFruit();
-		edge_data ed = fruitToEdge(f,graph);
-		Graph_Algo ga = new Graph_Algo(graph);
-		List<node_data> t_nd=ga.shortestPath(r.src, ed.getSrc());
-		for(node_data nd:t_nd) {
-			game.chooseNextEdge(r.id, nd.getKey());
-		}
+		Graph_Algo ga = new Graph_Algo(g);
 		
+		System.out.println(f.from);
+		List<node_data>arr = ga.shortestPath(r.src, f.from);
+		for(node_data temp:arr) {
+			game.chooseNextEdge(r.id, temp.getKey());
+		}
+	
 	}
 	/**
 	 * calculates where is the best point to start the game from.
@@ -180,11 +186,13 @@ public class MyGame {
 		int k = graph.nodeSize();
 		return (int)(Math.random()*k+1);
 	}
+	
 	private Fruit topFruit() {
+		
+		fetchFruits();
 		Fruit fru = null;
 		double temp=0;
 		for(Fruit f:fru_list) {
-			
 			if(f.value>temp) {
 				temp = f.value;
 				fru = f;	
@@ -268,6 +276,8 @@ public class MyGame {
 			for(edge_data e : ed) {
 				Point3D nd_p = g.getNode(e.getDest()).getLocation();
 				if((ns_p.distance3D(f_p)+f_p.distance3D(nd_p))-ns_p.distance3D(nd_p)<0.000001) {
+					f.from=e.getSrc();
+					f.to=e.getDest();
 					return e;
 				}
 			}
@@ -320,8 +330,7 @@ public class MyGame {
 					if(r.dest==-1) {
 						update();
 						System.out.println(Score(robo_list));
-						r.setDest(nextNode(graph, r.src));
-						game.chooseNextEdge(r.id, r.dest);	
+						goNext(r,graph);	
 					}	
 				}
 			} catch (JSONException e) {
