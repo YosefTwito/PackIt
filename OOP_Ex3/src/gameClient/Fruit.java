@@ -8,8 +8,7 @@ import utils.Point3D;
  * we need to read data from json file and fetch it to the fruit.
  * such:
  * where he is, his points, and the fruit itself.
- * @author Eldar and Yossi.
- *
+ * @author YosefTwito and EldarTakach
  */
 public class Fruit {
 	double value;

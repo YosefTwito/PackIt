@@ -1,6 +1,5 @@
 package gameClient;
 
-import dataStructure.edge_data;
 import utils.Point3D;
 
 /**
@@ -9,8 +8,7 @@ import utils.Point3D;
  * the robot knows:
  * where he is, and where he is going.
  * the score (fruits) he collected.
- * @author Eldar and Yossi
- *
+ * @author YosefTwito and EldarTakach
  */
 public class Robot {
 	int src; // the source of the robot.
