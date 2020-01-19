@@ -25,7 +25,6 @@ import javax.swing.JPanel;
 
 import Server.*;
 import dataStructure.*;
-import de.micromata.opengis.kml.v_2_2_0.Kml;
 import utils.Point3D;
 
 public class MyGameGUI {
@@ -246,7 +245,7 @@ public class MyGameGUI {
 					}     
 				}
 				else {
-					//JOptionPane.showMessageDialog(null, "                  Game Over ! \n           Your Score is: "+game.score);
+					JOptionPane.showMessageDialog(null, "                  Game Over ! \n           Your Score is: "+game.score);
 					try {
 						kml.make_kml(game,1);
 					} catch (ParseException | InterruptedException e) {
@@ -341,6 +340,12 @@ public class MyGameGUI {
 				super.processWindowEvent(e);
 				if (e.getID() == java.awt.event.WindowEvent.WINDOW_CLOSING) {
 					System.exit(-1);
+				}
+			}
+			
+			public void processMouseEvent(java.awt.event.MouseEvent m) {
+				if (m.getID()==java.awt.event.MouseEvent.MOUSE_CLICKED) {
+					System.out.println("mouse//////////////////////////");
 				}
 			}
 		};

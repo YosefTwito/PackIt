@@ -15,7 +15,6 @@ import java.util.Locale;
  * which can be loaded to Google Maps.
  * On Maps you can view the progress of the game and iterate through the stages of the game
  * @author Eldar and Yossi
- *
  */
 
 public class KML_Logger {
