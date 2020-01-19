@@ -36,7 +36,7 @@ public class MyGame {
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(14); // this is where we get the user input too know what game to play [0,23];
+		game_service game = Game_Server.getServer(6); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
@@ -57,7 +57,7 @@ public class MyGame {
 		System.out.println(mg.startHere());
 		System.out.println(gg.edgeSize());
 		System.out.println(gg.nodeSize());
-		System.out.println(gg.getNode(42).getWeight());
+		
 	
 	}
 	public MyGame(graph g,game_service game) {
@@ -157,7 +157,7 @@ public class MyGame {
 	}
 	/**
 	 * more clever approach to decide where to drive the robot.
-	 * will drive the robot to the closet and most valuavle fruit.
+	 * will drive the robot to the closet and most valuable fruit.
 	 * @param r robot
 	 */
 	public void goNext(Robot r) {
