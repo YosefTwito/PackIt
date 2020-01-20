@@ -34,6 +34,9 @@ public class MyGame {
 	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 	public double score=0;
 	private static KML_Logger kml=new KML_Logger();
+	public int topfruitTo;
+	public int topfruitFrom;
+
 
 
 
@@ -56,30 +59,35 @@ public class MyGame {
 		
 		
 		MyGame mg = new MyGame(gg,game);
-		
+		mg.SetTop();
 		mg.game.startGame();
 		
 
 		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
+		Fruit a = mg.topFruit();
 		while(mg.isRunning()) {
-		mg.robo_list=mg.upDate();
+		mg.robo_list=mg.upDate(a.from,a.to);
 		Robot r = mg.robo_list.get(0);
 		System.out.println(r.pos);
 		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
 
 		}
-		
-		
-	
-		
-		
-		
-	
 
+	}
+	public void SetTop() {
+		double temp =0;
+		Fruit tfru = new Fruit();
+		for(Fruit f:fru_list) {
+			if(f.value>temp) {
+				temp = f.value;
+					
+			}
+			tfru=f;
+			
+		}
+		this.topfruitFrom=tfru.from;
+		this.topfruitTo=tfru.to;
 		
-	
-		
-	
 	}
 	public MyGame(graph g,game_service game) {
 		graph=g;
@@ -180,17 +188,16 @@ public class MyGame {
 		return ans;
 	}
 	
-	public static List<node_data> go(MyGame mg,graph g,int src) {
-		Fruit f = mg.topFruit();
-
+	public List<node_data> go(graph g,int src,int from,int to) {
+		//Fruit f = topFruit();
 		
-		edge_data ed = fruitToEdge(f, g);
-	
 		Graph_Algo ga = new Graph_Algo(g);
+		//f= setFnT(f, g);
+
+		List<node_data>arr = ga.shortestPath(src, from);
 		
-		List<node_data>arr = ga.shortestPath(src, ed.getSrc());
-		
-		arr.add(g.getNode(ed.getDest()));
+		arr.add(g.getNode(to));
+		arr.add(g.getNode(from));
 		
 		return arr;
 		
@@ -223,16 +230,15 @@ public class MyGame {
 		return (int)(Math.random()*k+1);
 	}
 	
-	private Fruit topFruit() {
-		
-		
-		Fruit fru = this.fru_list.get(0);
+	public Fruit topFruit() {
+		Fruit fru = new Fruit();
 		double temp=0;
 		for(Fruit f:fru_list) {
 			if(f.value>temp) {
 				temp = f.value;
-				fru = f;	
-			}			
+					
+			}
+			fru = f;
 		}
 		return fru;
 	}
@@ -357,7 +363,7 @@ public class MyGame {
 	 * while the game is running.
 	 * fetches the data from the server and updates the robo list.
 	 */	
-	public ArrayList<Robot> upDate() {
+	public ArrayList<Robot> upDate(int from,int to) {
 		try {
 			kml.make_kml(this,0);
 		} catch (ParseException | InterruptedException e) {
@@ -404,11 +410,10 @@ public class MyGame {
 			
 			if(r.dest==-1) {
 				update();
+			
+				List<node_data> temp2 = go(graph,r.src,from,to);
 				
-				//System.out.println(Score(robo_list));
-				List<node_data> temp = go(this,graph,r.src);
-				
-				for(node_data nd:temp) {
+				for(node_data nd:temp2) {
 					
 					r.setDest(nd.getKey());
 					

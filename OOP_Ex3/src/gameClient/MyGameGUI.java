@@ -238,7 +238,9 @@ public class MyGameGUI {
 								}
 							}
 							else {
-								game.upDate();               	
+								Fruit t = game.topFruit();
+								
+								game.robo_list=game.upDate(t.from,t.to);               	
 							}  
 							Canvas.this.repaint();  
 						}
