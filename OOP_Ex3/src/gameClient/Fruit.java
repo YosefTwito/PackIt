@@ -34,6 +34,13 @@ public class Fruit {
 		this.type=f.type;
 		this.value=f.value;
 	}
+	public void setFrom(int f) {
+		this.from=f;
+		
+	}
+	public void setTo(int t) {
+		this.to=t;
+	}
 
 	public int getType() { return this.type; }
 	public void setPos(Point3D np) { this.pos = np; }

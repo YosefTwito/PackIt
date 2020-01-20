@@ -238,7 +238,7 @@ public class MyGameGUI {
 								}
 							}
 							else {
-								game.upDate();               	
+								game.robo_list=game.upDate();               	
 							}  
 							Canvas.this.repaint();  
 						}
