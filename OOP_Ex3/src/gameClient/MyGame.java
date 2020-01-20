@@ -54,14 +54,28 @@ public class MyGame {
 		//GarphGui gui = new GraphGui(myg); // YOSSI TA'ASE INIT LEZE <3
 		
 		
-		System.out.println(game.getFruits());
+		
 		MyGame mg = new MyGame(gg,game);
 		
-		Fruit f = mg.topFruit();
+		mg.game.startGame();
+		
+
+		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
+		while(mg.isRunning()) {
+		mg.robo_list=mg.upDate();
 		Robot r = mg.robo_list.get(0);
-		System.out.println(f.from);
-		mg.goNext(r, gg);
-		mg.upDate();
+		System.out.println(r.pos);
+		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
+
+		}
+		
+		
+	
+		
+		
+		
+	
+
 		
 	
 		
@@ -134,8 +148,11 @@ public class MyGame {
 					double value = fru.getDouble("value");
 					int type = fru.getInt("type");
 					Fruit f = new Fruit(value,type,p);
+					f=setFnT(f,graph);
+					
 					fru_list.add(f);
-					fruitToEdge(f,graph);
+					
+					
 				}
 
 			} catch (JSONException e) {
@@ -162,16 +179,32 @@ public class MyGame {
 		ans = itr.next().getDest();
 		return ans;
 	}
+	
+	public static List<node_data> go(MyGame mg,graph g,int src) {
+		Fruit f = mg.topFruit();
+
+		
+		edge_data ed = fruitToEdge(f, g);
+	
+		Graph_Algo ga = new Graph_Algo(g);
+		
+		List<node_data>arr = ga.shortestPath(src, ed.getSrc());
+		
+		arr.add(g.getNode(ed.getDest()));
+		
+		return arr;
+		
+	}
 	/**
 	 * more clever approach to decide where to drive the robot.
 	 * will drive the robot to the closet and most valuable fruit.
 	 * @param r robot
 	 */
 	public void goNext(Robot r,graph g) {
-		Fruit f = topFruit();
+		Fruit f = this.topFruit();
 		Graph_Algo ga = new Graph_Algo(g);
 		
-		System.out.println(f.from);
+		
 		List<node_data>arr = ga.shortestPath(r.src, f.from);
 		arr.add(g.getNode(f.to));
 		for(node_data temp:arr) {
@@ -192,8 +225,8 @@ public class MyGame {
 	
 	private Fruit topFruit() {
 		
-		fetchFruits();
-		Fruit fru = null;
+		
+		Fruit fru = this.fru_list.get(0);
 		double temp=0;
 		for(Fruit f:fru_list) {
 			if(f.value>temp) {
@@ -210,6 +243,7 @@ public class MyGame {
 	 * @param dest node of the robot
 	 * @return
 	 */
+	
 	public boolean nextNodeManual(Robot r,int src,int dest) {
 		if(graph.getNode(dest)==null) return false;
 		boolean ans = false;
@@ -268,7 +302,7 @@ public class MyGame {
 	 * @param g - graph
 	 * @return the edge_data that hold the fruit.
 	 */
-	public edge_data fruitToEdge(Fruit f,graph g) {
+	public static edge_data fruitToEdge(Fruit f,graph g) {
 		edge_data ans = null;
 		Point3D f_p = f.pos;
 		Collection<node_data> nd = g.getV();
@@ -279,14 +313,37 @@ public class MyGame {
 			for(edge_data e : ed) {
 				Point3D nd_p = g.getNode(e.getDest()).getLocation();
 				if((ns_p.distance3D(f_p)+f_p.distance3D(nd_p))-ns_p.distance3D(nd_p)<0.000001) {
-					f.from=e.getSrc();
-					f.to=e.getDest();
+					f.setFrom(e.getSrc());
+					f.setTo(e.getDest());
 					return e;
 				}
 			}
 		}
 		
 		return ans;
+	}
+	public Fruit setFnT(Fruit f,graph g) {
+		Fruit ans = new Fruit();
+		ans.type=f.type;
+		ans.pos=f.pos;
+		Point3D f_p = f.pos;
+		Collection<node_data> nd = g.getV();
+		for(node_data n:nd) {
+			Point3D ns_p = n.getLocation();
+			Collection<edge_data> ed = g.getE(n.getKey());
+			if(ed==null) continue;
+			for(edge_data e : ed) {
+				Point3D nd_p = g.getNode(e.getDest()).getLocation();
+				if((ns_p.distance3D(f_p)+f_p.distance3D(nd_p))-ns_p.distance3D(nd_p)<0.000001) {
+					ans.setFrom(e.getSrc());
+					ans.setTo(e.getDest());
+					return ans;
+				}
+			}
+		}
+		
+		return ans;
+		
 	}
 	public boolean close(Robot r) {
 		for(Fruit f:fru_list) {
@@ -296,23 +353,21 @@ public class MyGame {
 	}
 	
 	/**
-	 * 
 	 * updates the robot list constantly so the robot location and score would update
 	 * while the game is running.
 	 * fetches the data from the server and updates the robo list.
 	 */	
-	public void upDate() {
+	public ArrayList<Robot> upDate() {
 		try {
 			kml.make_kml(this,0);
 		} catch (ParseException | InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		robo_list.clear();
 
-		
 		List<String> log = game.move();	
 		if(log!=null) {
+			robo_list.clear();
 			String robot_json = log.toString();
 			try {
 				JSONArray line= new JSONArray(robot_json);
@@ -337,22 +392,39 @@ public class MyGame {
 
 				}
 				
-				for(Robot r:robo_list) {
-	
-					if(r.dest==-1) {
-						update();
-						System.out.println(Score(robo_list));
-						r.dest = nextNode(graph, r.src);
-						game.chooseNextEdge(r.id,r.dest);
-						
-						
-					}	
-				}
+			
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+		
 		}
+		
+		for(Robot r:robo_list) {
+			
+			if(r.dest==-1) {
+				update();
+				
+				//System.out.println(Score(robo_list));
+				List<node_data> temp = go(this,graph,r.src);
+				
+				for(node_data nd:temp) {
+					
+					r.setDest(nd.getKey());
+					
+					game.chooseNextEdge(r.id,r.dest);
+					
+				
+				
+//				r.dest = nextNode(graph, r.src);
+//				game.chooseNextEdge(r.id,r.dest);
+			//	System.out.println(r.id+"|"+r.dest+"|"+r.pos);
+				
+				
+			}	
+			}
+		}
+		return robo_list;
 	}
 	/**
 	 * updates the fruit list constantly while the game is running.
@@ -361,7 +433,7 @@ public class MyGame {
 	public void update() {
 		fru_list.clear();
 		List<String> log = game.getFruits();
-		System.out.println(log);
+		
 		
 		if(log!=null) {
 			String fru_json = log.toString();
@@ -380,6 +452,7 @@ public class MyGame {
 					double value = fru.getDouble("value");
 					int type = fru.getInt("type");
 					Fruit f = new Fruit(value,type,p);
+					f=setFnT(f,graph);
 					fru_list.add(f);
 					
 				}
