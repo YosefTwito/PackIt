@@ -60,7 +60,7 @@ public class MyGame {
 		//after that, we need to update our GUI with new parameters and present it.
 
 		MyGame mg = new MyGame(gg,game);
-		mg.goGo();
+		mg.goGo(mode);
 
 //		
 //
@@ -95,21 +95,7 @@ public class MyGame {
 		return gameNum;
 		
 	}
-	public void SetTop() {
-		double temp =0;
-		Fruit tfru = new Fruit();
-		for(Fruit f:fru_list) {
-			if(f.value>temp) {
-				temp = f.value;
-					
-			}
-			tfru=f;
-			
-		}
-		this.topfruitFrom=tfru.from;
-		this.topfruitTo=tfru.to;
-		
-	}
+
 	public MyGame(graph g,game_service game) {
 		graph=g;
 		this.game=game;
@@ -121,14 +107,14 @@ public class MyGame {
 	}
 	
 	
-	public void goGo() {
+	public void goGo(int mode) {
 		Rugi r = new Rugi((DGraph)this.graph,game,7);
 		r.setVisible(true);
 		
 		game.startGame();
 		
 		while(game.isRunning()) {
-			this.upDate(1);
+			this.upDate(mode);
 			r.repaint();
 		}
 		
