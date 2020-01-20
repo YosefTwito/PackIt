@@ -239,8 +239,8 @@ public class MyGameGUI {
 							}
 							else {
 								Fruit t = game.topFruit();
-								System.out.println(t.from);
-								System.out.println(t.to);
+								System.out.println("FROM"+t.from);
+								System.out.println("TO"+t.to);
 								game.robo_list=game.upDate(t.from,t.to);               	
 							}  
 							Canvas.this.repaint();  
