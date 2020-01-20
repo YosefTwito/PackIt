@@ -239,7 +239,8 @@ public class MyGameGUI {
 							}
 							else {
 								Fruit t = game.topFruit();
-								
+								System.out.println(t.from);
+								System.out.println(t.to);
 								game.robo_list=game.upDate(t.from,t.to);               	
 							}  
 							Canvas.this.repaint();  

@@ -194,31 +194,16 @@ public class MyGame {
 		Graph_Algo ga = new Graph_Algo(g);
 		//f= setFnT(f, g);
 
-		List<node_data>arr = ga.shortestPath(src, from);
+			
 		
+		List<node_data>arr = ga.shortestPath(src, from);
 		arr.add(g.getNode(to));
-		arr.add(g.getNode(from));
+
 		
 		return arr;
 		
 	}
-	/**
-	 * more clever approach to decide where to drive the robot.
-	 * will drive the robot to the closet and most valuable fruit.
-	 * @param r robot
-	 */
-	public void goNext(Robot r,graph g) {
-		Fruit f = this.topFruit();
-		Graph_Algo ga = new Graph_Algo(g);
-		
-		
-		List<node_data>arr = ga.shortestPath(r.src, f.from);
-		arr.add(g.getNode(f.to));
-		for(node_data temp:arr) {
-			game.chooseNextEdge(r.id, temp.getKey());
-		}
-	
-	}
+
 	/**
 	 * calculates where is the best point to start the game from.
 	 * @return the node its best to start in
@@ -236,8 +221,9 @@ public class MyGame {
 		for(Fruit f:fru_list) {
 			if(f.value>temp) {
 				temp = f.value;
-				fru = f;
+				
 			}
+			fru = f;
 			
 		}
 		return fru;
@@ -410,7 +396,7 @@ public class MyGame {
 			
 			if(r.dest==-1) {
 				update();
-			
+				
 				List<node_data> temp2 = go(graph,r.src,from,to);
 				
 				for(node_data nd:temp2) {
