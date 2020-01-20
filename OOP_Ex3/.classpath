@@ -10,5 +10,12 @@
 	<classpathentry kind="src" path="/TheMazeOfWaze"/>
 	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/GameServer_v0.27.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/activation-1.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/JavaAPIforKml-2.2.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/java-json.jar"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/jaxb-api-2.1.jar"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/jaxb-impl-2.1.17.jar"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/jaxb-xjc-2.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/yosef/git/PackIt/OOP_Ex3/stax-api-1.0-2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

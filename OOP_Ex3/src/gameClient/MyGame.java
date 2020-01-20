@@ -296,6 +296,7 @@ public class MyGame {
 	}
 	
 	/**
+	 * 
 	 * updates the robot list constantly so the robot location and score would update
 	 * while the game is running.
 	 * fetches the data from the server and updates the robo list.
