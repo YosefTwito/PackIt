@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Menu;
 import java.awt.MenuBar;
+import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -28,7 +29,6 @@ import Server.Game_Server;
 import Server.game_service;
 import dataStructure.*;
 
-@SuppressWarnings("deprecation")
 public class Rugi extends JFrame implements ActionListener, MouseListener, Runnable, Observer{
 
 	/**
@@ -82,11 +82,17 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 	private void InitGui() {
 		this.setSize(1280, 720);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(Rocket.getImage());
+		this.setTitle("Welcome to Pack-It !");
 
 		MenuBar menu = new MenuBar();
 
 		Menu file = new Menu("File");
 		menu.add(file);
+		
+		MenuItem item1 = new MenuItem("Get Statistics");
+		item1.addActionListener(this);
+		file.add(item1);
 
 		this.setMenuBar(menu);
 
@@ -134,7 +140,6 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 		for (node_data n : nodes) {
 			g2d.setStroke(new BasicStroke(2));
 			float font = 14.0f;
-
 			g2d.setFont(g2d.getFont().deriveFont(font));
 			
 			int x = (int)scale(n.getLocation().x(), ex[0], ex[1], 50, 1230);
@@ -219,8 +224,9 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 					
 				g2d.drawImage(robotI.getImage(), xl-12, yl-12, 25, 25, this);
 				g2d.setColor(Color.PINK);
-				float font = 28.0f;
-				g2d.drawString(""+id, xl, yl-20);
+				float font = 21.0f;
+				g2d.setFont(g2d.getFont().deriveFont(font));
+				g2d.drawString(""+id, xl-4, yl-20);
 				
 			}catch (Exception e) { e.printStackTrace(); }
 		}
@@ -236,7 +242,6 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 	public void run() {
 		repaint();
 	}
-	@SuppressWarnings("deprecation")
 	@Override
 	public void update(Observable o, Object arg) {
 		repaint();
@@ -245,8 +250,13 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
+		String event = e.getActionCommand();		
 
+		switch(event) {
+
+		case "Get Statistics":
+			break;
+		}
 	}
 
 
@@ -290,27 +300,5 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 			if (v.getLocation().y()>ans[3]) ans[3] = v.getLocation().y();
 		});
 		return ans;
-	}
-
-
-	public static void main(String[] args) {
-		game_service a = Game_Server.getServer(23);
-		DGraph t = new DGraph();
-		t.init(a.getGraph());
-		MyGame mg = new MyGame((graph)t, a);
-		a.startGame();
-		a.addRobot(3);
-		a.addRobot(5);
-		Rugi b = new Rugi(t, a , 23);
-		b.setVisible(true);
-		while(a.isRunning()) {
-			try {
-				Thread.sleep(50);
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			mg.upDate(0, 5);
-		}
 	}
 }
