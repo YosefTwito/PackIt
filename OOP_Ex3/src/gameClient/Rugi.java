@@ -95,6 +95,8 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 		file.add(item1);
 
 		this.setMenuBar(menu);
+		
+		this.addMouseListener(this);
 
 	}
 

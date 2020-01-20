@@ -6,6 +6,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.swing.ImageIcon;
+import javax.swing.JOptionPane;
 import javax.swing.plaf.synth.SynthDesktopIconUI;
 
 import org.json.JSONArray;
@@ -41,7 +43,10 @@ public class MyGame {
 
 
 	public static void main(String[] args) {
-		game_service game = Game_Server.getServer(7); // this is where we get the user input too know what game to play [0,23];
+		int level = getLevel();
+		int mode = getMode();
+		
+		game_service game = Game_Server.getServer(level); // this is where we get the user input too know what game to play [0,23];
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
@@ -54,13 +59,9 @@ public class MyGame {
 		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
 		//after that, we need to update our GUI with new parameters and present it.
 
-		
-		
-		
 		MyGame mg = new MyGame(gg,game);
 		mg.goGo();
-//		mg.SetTop();
-//		mg.game.startGame();
+
 //		
 //
 //		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
@@ -73,6 +74,26 @@ public class MyGame {
 
 //		}
 
+	}
+	private static int getMode() {
+		ImageIcon robo = new ImageIcon("robotB.png");
+		String[] Mode = {"Automate", "Manual"};
+		int ModeNum = JOptionPane.showOptionDialog(null, "Choose the Mode you would like to display", "Click a button",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, Mode, Mode[0]);
+		if (ModeNum<0) ModeNum=0;//in case user don't pick and press x
+		return ModeNum;
+	}
+	private static int getLevel() {
+		// Logo for options-dialog
+		ImageIcon robo = new ImageIcon("robotB.png");
+
+		// Set the game Level - [0,23]
+		String[] options = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"};
+		int gameNum = JOptionPane.showOptionDialog(null, "Choose the Level you would like to display", "Click a button",
+				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
+		if (gameNum<0) gameNum=0;//in case user don't pick and press x
+		return gameNum;
+		
 	}
 	public void SetTop() {
 		double temp =0;
@@ -107,7 +128,7 @@ public class MyGame {
 		game.startGame();
 		
 		while(game.isRunning()) {
-			this.upDate();
+			this.upDate(1);
 			r.repaint();
 		}
 		
@@ -360,7 +381,7 @@ public class MyGame {
 	 * while the game is running.
 	 * fetches the data from the server and updates the robo list.
 	 */	
-	public ArrayList<Robot> upDate() {
+	public ArrayList<Robot> upDate(int mode) {
 		try {
 			kml.make_kml(this,0);
 		} catch (ParseException | InterruptedException e) {
@@ -407,6 +428,8 @@ public class MyGame {
 			
 			if(r.dest==-1) {
 				update();
+				if(mode==0) {
+				
 				
 				List<node_data> temp2 = go(graph,r.src);
 				
@@ -416,14 +439,27 @@ public class MyGame {
 					
 					game.chooseNextEdge(r.id,r.dest);
 					
-				
-				
-//				r.dest = nextNode(graph, r.src);
-//				game.chooseNextEdge(r.id,r.dest);
-			//	System.out.println(r.id+"|"+r.dest+"|"+r.pos);
-				
-				
-			}	
+				}
+
+			}
+				else {
+					
+					ImageIcon robo = new ImageIcon("robotB.png");
+	
+					int size = this.graph.getE(r.getSrc()).size();
+					int [] tem = new int[size];
+					String[] options = new String[size];
+					ArrayList<edge_data> temp = new ArrayList<edge_data>();
+					temp.addAll(graph.getE(r.src));
+					for(int i=0;i<size;i++) {
+						tem[i]=temp.get(i).getDest();
+						options[i]=""+temp.get(i).getDest();
+						
+					}
+					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go", "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
+					int dest= tem[ryyy];
+					nextNodeManual(r, r.src, ryyy);
+				}
 			}
 		}
 		return robo_list;
