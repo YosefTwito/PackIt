@@ -236,9 +236,9 @@ public class MyGame {
 		for(Fruit f:fru_list) {
 			if(f.value>temp) {
 				temp = f.value;
-					
+				fru = f;
 			}
-			fru = f;
+			
 		}
 		return fru;
 	}
