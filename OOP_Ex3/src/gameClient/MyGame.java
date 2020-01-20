@@ -53,25 +53,25 @@ public class MyGame {
 		//we have the graph. now we need to get the robots and fruits.
 		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
 		//after that, we need to update our GUI with new parameters and present it.
-		
-		//GarphGui gui = new GraphGui(myg); // YOSSI TA'ASE INIT LEZE <3
+
 		
 		
 		
 		MyGame mg = new MyGame(gg,game);
-		mg.SetTop();
-		mg.game.startGame();
-		
+		mg.goGo();
+//		mg.SetTop();
+//		mg.game.startGame();
+//		
+//
+//		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
+//		Fruit a = mg.topFruit();
+//		while(mg.isRunning()) {
+//		mg.robo_list=mg.upDate();
+//		Robot r = mg.robo_list.get(0);
+//		System.out.println(r.pos);
+//		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
 
-		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
-		Fruit a = mg.topFruit();
-		while(mg.isRunning()) {
-		mg.robo_list=mg.upDate(a.from,a.to);
-		Robot r = mg.robo_list.get(0);
-		System.out.println(r.pos);
-		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
-
-		}
+//		}
 
 	}
 	public void SetTop() {
@@ -96,12 +96,23 @@ public class MyGame {
 		fetchFruits();
 	}
 	public MyGame() {
-		graph=null;
-		this.game=null;
+		
 	}
-	public void updategame(game_service game) {
-		this.game=game;
+	
+	
+	public void goGo() {
+		Rugi r = new Rugi((DGraph)this.graph,game,7);
+		r.setVisible(true);
+		
+		game.startGame();
+		
+		while(game.isRunning()) {
+			this.upDate();
+			r.repaint();
+		}
+		
 	}
+	
 	/**
 	 * function that parse the json and retracts robotos to array list of robots.
 	 */
@@ -188,16 +199,16 @@ public class MyGame {
 		return ans;
 	}
 	
-	public List<node_data> go(graph g,int src,int from,int to) {
-		//Fruit f = topFruit();
+	public List<node_data> go(graph g,int src) {
+		Fruit f = topFruit();
 		
 		Graph_Algo ga = new Graph_Algo(g);
-		//f= setFnT(f, g);
+		f= setFnT(f, g);
 
 			
 		
-		List<node_data>arr = ga.shortestPath(src, from);
-		arr.add(g.getNode(to));
+		List<node_data>arr = ga.shortestPath(src, f.from);
+		arr.add(g.getNode(f.to));
 
 		
 		return arr;
@@ -349,7 +360,7 @@ public class MyGame {
 	 * while the game is running.
 	 * fetches the data from the server and updates the robo list.
 	 */	
-	public ArrayList<Robot> upDate(int from,int to) {
+	public ArrayList<Robot> upDate() {
 		try {
 			kml.make_kml(this,0);
 		} catch (ParseException | InterruptedException e) {
@@ -397,7 +408,7 @@ public class MyGame {
 			if(r.dest==-1) {
 				update();
 				
-				List<node_data> temp2 = go(graph,r.src,from,to);
+				List<node_data> temp2 = go(graph,r.src);
 				
 				for(node_data nd:temp2) {
 					
@@ -422,6 +433,7 @@ public class MyGame {
 	 * fetches the data from the server
 	 */
 	public void update() {
+		
 		fru_list.clear();
 		List<String> log = game.getFruits();
 		
