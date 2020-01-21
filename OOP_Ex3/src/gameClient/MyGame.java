@@ -110,7 +110,7 @@ public class MyGame {
 	
 	
 	public void goGo(int mode) {
-		Rugi r = new Rugi((DGraph)this.graph,game,7);
+		Rugi r = new Rugi((DGraph)this.graph,game,7,this);
 		r.setVisible(true);
 		
 		game.startGame();
