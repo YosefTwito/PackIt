@@ -140,11 +140,11 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 		Graphics2D g2d = (Graphics2D)g;
 		
 		g.setColor(Color.BLACK);
-		float fontMessage = 14.0f;
+		float fontMessage = 28.0f;
 		g2d.setFont(g2d.getFont().deriveFont(fontMessage));
 		g.drawString("Score: "+myGame.Score(myGame.robo_list), 150, 80);
-		g.drawString("Time : "+game.timeToEnd()/1000, 450, 80);
-		g.drawString("Level: "+this.Level, 650, 80);
+		g.drawString("Time : "+game.timeToEnd()/1000, 350, 80);
+		g.drawString("Level: "+this.Level, 570, 80);
 
 
 		for (node_data n : nodes) {
