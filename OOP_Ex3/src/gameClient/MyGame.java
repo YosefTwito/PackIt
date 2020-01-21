@@ -123,12 +123,7 @@ public class MyGame {
 		
 		//String score = this.Score(this.robo_list);
 		//this.score=score;
-		try {
-			kml.make_kml(this,1);
-		} catch (ParseException | InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+	
 		
 		JOptionPane.showMessageDialog(null, ("Score is: "+Score(this.robo_list)));
 		
