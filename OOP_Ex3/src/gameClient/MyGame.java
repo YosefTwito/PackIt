@@ -124,6 +124,7 @@ public class MyGame {
 		String score = this.Score(this.robo_list);
 		this.score=score;
 		
+		JOptionPane.showMessageDialog(null, ("Score is"+score));
 		
 		
 	}
