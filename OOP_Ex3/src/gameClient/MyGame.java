@@ -34,10 +34,12 @@ public class MyGame {
 	public graph graph;
 	public ArrayList<Robot> robo_list = new ArrayList<Robot>(); // list of robots we have
 	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
-	public double score=0;
+	public String score;
 	private static KML_Logger kml=new KML_Logger();
-	public int topfruitTo;
-	public int topfruitFrom;
+	
+	public String getScore() {
+		return score;
+	}
 
 
 
@@ -120,6 +122,9 @@ public class MyGame {
 		}
 		
 		String score = this.Score(this.robo_list);
+		this.score=score;
+		
+		
 		
 	}
 	
@@ -309,7 +314,7 @@ public class MyGame {
 			total+=al.get(i).value;
 			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
 			ans+="\n";
-			this.score=total;
+			this.score=""+total;
 		}
 		
 		System.out.println("Final Score is"+score);
@@ -379,7 +384,7 @@ public class MyGame {
 	 * fetches the data from the server and updates the robo list.
 	 */	
 	public ArrayList<Robot> upDate(int mode) {
-		int beenthere=0;
+		
 		try {
 			kml.make_kml(this,0);
 		} catch (ParseException | InterruptedException e) {
