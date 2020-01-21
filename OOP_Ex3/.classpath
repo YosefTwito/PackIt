@@ -10,11 +10,12 @@
 	<classpathentry kind="src" path="/TheMazeOfWaze"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.junit.JUNIT_CONTAINER/5"/>
 	<classpathentry kind="lib" path="activation-1.1.jar"/>
-	<classpathentry kind="lib" path="GameServer_v0.27.jar"/>
 	<classpathentry kind="lib" path="JavaAPIforKml-2.2.0.jar"/>
 	<classpathentry kind="lib" path="jaxb-api-2.1.jar"/>
 	<classpathentry kind="lib" path="jaxb-impl-2.1.17.jar"/>
 	<classpathentry kind="lib" path="jaxb-xjc-2.2.jar"/>
 	<classpathentry kind="lib" path="stax-api-1.0-2.jar"/>
+	<classpathentry kind="lib" path="GameServer_v0.32.jar"/>
+	<classpathentry kind="lib" path="mysql-connector-java-5.1.47.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
