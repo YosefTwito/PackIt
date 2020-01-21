@@ -119,6 +119,8 @@ public class MyGame {
 			update();
 		}
 		
+		String score = this.Score(this.robo_list);
+		
 	}
 	
 	/**
