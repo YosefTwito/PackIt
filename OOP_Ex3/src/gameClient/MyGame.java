@@ -316,9 +316,10 @@ public class MyGame {
 			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
 			ans+="\n";
 			this.score=""+total;
+			this.score="\n";
 		}
 		
-		System.out.println("Final Score is"+score);
+		this.score+="Total"+total;
 		return ans;
 	}
 
