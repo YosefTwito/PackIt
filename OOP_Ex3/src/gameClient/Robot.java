@@ -17,6 +17,7 @@ public class Robot {
 	double value=0; // amount of points collected.
 	Point3D pos; //3D pos of robot.
 	int speed;
+	int lastnode;
 
 	public Robot(int rid, int src, int dest,Point3D pos,double value,int s) {
 		this.id=rid;
@@ -30,6 +31,7 @@ public class Robot {
 	public Robot() {
 
 	}
+	public void setLast(int x) { this.lastnode=x;}
 	public int getSpeed() { return this.speed; }
 	public void incSpeed() { this.speed++; } 
 	public double getV() { return this.value; }

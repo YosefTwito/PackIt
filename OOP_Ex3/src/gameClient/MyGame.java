@@ -116,6 +116,7 @@ public class MyGame {
 		while(game.isRunning()) {
 			this.upDate(mode);
 			r.repaint();
+			update();
 		}
 		
 	}
@@ -216,6 +217,7 @@ public class MyGame {
 		
 		List<node_data>arr = ga.shortestPath(src, f.from);
 		arr.add(g.getNode(f.to));
+		
 
 		
 		return arr;
@@ -368,6 +370,7 @@ public class MyGame {
 	 * fetches the data from the server and updates the robo list.
 	 */	
 	public ArrayList<Robot> upDate(int mode) {
+		int beenthere=0;
 		try {
 			kml.make_kml(this,0);
 		} catch (ParseException | InterruptedException e) {
@@ -399,6 +402,7 @@ public class MyGame {
 					int speed = jrobots.getInt("speed");
 					Robot r = new Robot(rid,src,dest,p,val,speed);
 					robo_list.add(r);
+					r.setLast(src);
 
 				}
 				
@@ -413,7 +417,7 @@ public class MyGame {
 		for(Robot r:robo_list) {
 			
 			if(r.dest==-1) {
-				update();
+				
 				if(mode==0) {
 				
 				
@@ -423,6 +427,8 @@ public class MyGame {
 					
 					r.setDest(nd.getKey());
 					
+					
+					//System.out.println(temp2);
 					game.chooseNextEdge(r.id,r.dest);
 					
 				}
@@ -444,7 +450,7 @@ public class MyGame {
 					}
 					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go", "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
 					int dest= tem[ryyy];
-					nextNodeManual(r, r.src, ryyy);
+					nextNodeManual(r, r.src, dest);
 				}
 			}
 		}
