@@ -60,6 +60,7 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 
 	graph graph;
 	game_service game;
+	MyGame myGame;
 
 	public Rugi() {;}
 
@@ -70,10 +71,11 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 		((Observable)graph).addObserver(this);
 	}
 
-	public Rugi(graph graph, game_service game, int Level) {
+	public Rugi(graph graph, game_service game, int Level, MyGame mg) {
 		InitGui();
 		this.nodes=graph.getV();
 		this.graph=graph;
+		this.myGame=mg;
 		((Observable)graph).addObserver(this);
 		this.game=game;
 		this.Level=Level;
@@ -140,7 +142,7 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 		g.setColor(Color.BLACK);
 		float fontMessage = 14.0f;
 		g2d.setFont(g2d.getFont().deriveFont(fontMessage));
-		g.drawString("Score: ", 150, 80);
+		g.drawString("Score: "+myGame.score, 150, 80);
 		g.drawString("Time : "+game.timeToEnd()/1000, 450, 80);
 		g.drawString("Level: "+this.Level, 650, 80);
 
