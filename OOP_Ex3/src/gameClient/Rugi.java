@@ -126,17 +126,23 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 		g2d.drawImage(buff, 0, 0, null);
 
 		paintRobots();
-		paintFruits();
+		paintFruits();	
 
 		if (game.timeToEnd()<1000) {
-			g.drawString("Game Over", 550, 30);
+			g.drawString("Game Over !", 550, 100);
 		}
 	}
 
 	public void paintGraph(Graphics g) {
 		super.paintComponents(g);
 		Graphics2D g2d = (Graphics2D)g;
+		
 		g.setColor(Color.BLACK);
+		float fontMessage = 14.0f;
+		g2d.setFont(g2d.getFont().deriveFont(fontMessage));
+		g.drawString("Score: ", 150, 80);
+		g.drawString("Time : "+game.timeToEnd()/1000, 450, 80);
+		g.drawString("Level: "+this.Level, 650, 80);
 
 
 		for (node_data n : nodes) {
@@ -167,10 +173,6 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 				g.drawLine(x2, y2, x3, y3);
 			}
 		}
-		g.setColor(Color.BLACK);
-		g.drawString("Score: ", 150, 28);
-		g.drawString("Time : "+game.timeToEnd()/1000, 450, 28);
-		g.drawString("Level: "+this.Level, 650, 28);
 	}
 
 	public void paintFruits() {
@@ -225,7 +227,7 @@ public class Rugi extends JFrame implements ActionListener, MouseListener, Runna
 				int yl = (int)scale(y, ex[2], ex[3], 80, 670 );
 					
 				g2d.drawImage(robotI.getImage(), xl-12, yl-12, 25, 25, this);
-				g2d.setColor(Color.PINK);
+				g2d.setColor(Color.RED);
 				float font = 21.0f;
 				g2d.setFont(g2d.getFont().deriveFont(font));
 				g2d.drawString(""+id, xl-4, yl-20);
