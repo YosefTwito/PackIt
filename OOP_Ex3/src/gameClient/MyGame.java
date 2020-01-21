@@ -121,10 +121,10 @@ public class MyGame {
 			update();
 		}
 		
-		String score = this.Score(this.robo_list);
-		this.score=score;
+		//String score = this.Score(this.robo_list);
+		//this.score=score;
 		
-		JOptionPane.showMessageDialog(null, ("Score is"+score));
+		JOptionPane.showMessageDialog(null, ("Score is: "+Score(this.robo_list)));
 		
 		
 	}
@@ -308,13 +308,13 @@ public class MyGame {
 	 * @param al array list of the robots
 	 * @return string that shows each robot and its score
 	 */
-	public String Score(ArrayList<Robot> al){
-		String ans ="";
+	public int Score(ArrayList<Robot> al){
+		int ans = 0;
 		int total=0;
 		for(int i=0;i<al.size();i++) {
 			total+=al.get(i).value;
-			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
-			ans+="\n";
+			//ans+="\nRobot #"+i+": - Scored:"+al.get(i).value;
+			ans+=al.get(i).value;
 			
 			this.score="\n";
 		}
