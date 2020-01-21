@@ -1,9 +1,11 @@
-	package gameClient;
-	import java.sql.Connection;
-	import java.sql.DriverManager;
-	import java.sql.ResultSet;
-	import java.sql.SQLException;
-	import java.sql.Statement;
+package gameClient;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
+
 /**
  * This class represents a simple example of using MySQL Data-Base.
  * Use this example for writing solution. 
@@ -34,8 +36,7 @@ public class SimpleDB {
 		public static void printLog() {
 			try {
 				Class.forName("com.mysql.jdbc.Driver");
-				Connection connection = 
-						DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcUserPassword);
+				Connection connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcUserPassword);
 				Statement statement = connection.createStatement();
 				String allCustomersQuery = "SELECT * FROM Logs;";
 				ResultSet resultSet = statement.executeQuery(allCustomersQuery);

@@ -9,8 +9,6 @@ import java.awt.MenuBar;
 import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.HashMap;
@@ -28,45 +26,33 @@ import org.json.JSONObject;
 import Server.game_service;
 import dataStructure.*;
 
-public class MyGameGUI extends JFrame implements ActionListener, MouseListener, Runnable, Observer{
+public class MyGameGUI extends JFrame implements ActionListener, Runnable, Observer{
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	
-	double pathW =-1;
-	List<node_data> path;
-	int [][] robotD;
-	Graphics doubleB;
-	int Level;
-	Graphics2D g2d;
 
+	//Get Icons for the game
 	ImageIcon robo = new ImageIcon("robotB.png");
 	ImageIcon robotI = new ImageIcon("robot.png");
 	ImageIcon bananI = new ImageIcon("banana.png");
 	ImageIcon appleI = new ImageIcon("apple.png");
 	ImageIcon Rocket = new ImageIcon("Rocket.png");
-
-	double ex[];
-
-	int action=0;
-
+	
+	Graphics2D g2d;
+	
 	Collection <node_data> nodes;
 	Collection <edge_data> edges;
-
 	graph graph;
 	game_service game;
 	MyGame myGame;
-
+	
+	double GuiScales[]; // Minimum X, Maximum X, Minimum Y, Maximum Y
+	int Level;
+	
+	// Constructors
 	public MyGameGUI() {;}
-
-	public MyGameGUI(graph graph) {
-		InitGui();
-		this.nodes=graph.getV();
-		this.graph=graph;
-		((Observable)graph).addObserver(this);
-	}
 
 	public MyGameGUI(graph graph, game_service game, int Level, MyGame mg) {
 		InitGui();
@@ -78,6 +64,7 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 		this.Level=Level;
 	}
 
+	// Initialize the Graphical Window for the Game
 	private void InitGui() {
 		this.setSize(1280, 720);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -94,14 +81,11 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 		file.add(item1);
 
 		this.setMenuBar(menu);
-		
-		this.addMouseListener(this);
-
+	
 	}
 
 	private BufferedImage buff;
 	private Graphics2D g2;
-	//private BufferedImage buff3;
 
 	JLabel background = null;
 
@@ -112,15 +96,18 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 			if ((this.WIDTH != 1280 || this.HEIGHT != 720) && background != null) {
 				remove(background);
 			}
+			
 			this.setLayout(null);
+			
 			//sets scales for gui window
-			ex = scaleHelper(((DGraph)graph).nodesMap);
+			GuiScales = scaleHelper(((DGraph)graph).nodesMap);
 
 			buff = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_ARGB);
 			g2 = buff.createGraphics();
 			super.paint(g2);
 			paintGraph(g2);
 		}
+		
 		g2d = (Graphics2D)g;
 		g2d.drawImage(buff, 0, 0, null);
 
@@ -128,13 +115,13 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 		paintFruits();	
 
 		if (game.timeToEnd()<1000) {
-			float fontMessage = 38.0f;
+			float fontMessage = 48.0f;
 			g.setFont(g.getFont().deriveFont(fontMessage));
 			g.drawString("Game Over !", 550, 250);
 		}
 	}
 
-	public void paintGraph(Graphics g) {
+	private void paintGraph(Graphics g) {
 		super.paintComponents(g);
 		Graphics2D g2d = (Graphics2D)g;
 		
@@ -145,41 +132,40 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 		g.drawString("Time : "+game.timeToEnd()/1000, 350, 80);
 		g.drawString("Level: "+myGame.get_level(), 570, 80);
 
-
+		//Get and paint nodes
 		for (node_data n : nodes) {
 			g2d.setStroke(new BasicStroke(2));
 			float font = 14.0f;
 			g2d.setFont(g2d.getFont().deriveFont(font));
 			
-			int x = (int)scale(n.getLocation().x(), ex[0], ex[1], 50, 1230);
-			int y = (int)scale(n.getLocation().y(), ex[2], ex[3], 80, 670 );
+			int scaledX = (int)scale(n.getLocation().x(), GuiScales[0], GuiScales[1], 50, 1230);
+			int scaledY = (int)scale(n.getLocation().y(), GuiScales[2], GuiScales[3], 80, 670 );
 			
 			g.setColor(Color.BLACK);
-			g.fillOval(x-7, y-7, 14, 14);
+			g.fillOval(scaledX-7, scaledY-7, 14, 14);
 			g.setColor(Color.BLUE);
-			g.drawString(""+n.getKey(), x-12, y-12);
+			g.drawString(""+n.getKey(), scaledX-12, scaledY-12);
 			
+			//Get and paint edges
 			edges = graph.getE(n.getKey());
 			if (edges == null) {continue;}
 
 			for (edge_data e : edges) {
 				
-				int x2 = (int)scale(n.getLocation().x(), ex[0], ex[1], 50, 1230);
-				int y2 = (int)scale(n.getLocation().y(), ex[2], ex[3], 80, 670 );
-				
-				int x3 = (int)scale(graph.getNode(e.getDest()).getLocation().x(), ex[0], ex[1], 50, 1230);
-				int y3 = (int)scale(graph.getNode(e.getDest()).getLocation().y(), ex[2], ex[3], 80, 670 );
+				int destX = (int)scale(graph.getNode(e.getDest()).getLocation().x(), GuiScales[0], GuiScales[1], 50, 1230);
+				int destY = (int)scale(graph.getNode(e.getDest()).getLocation().y(), GuiScales[2], GuiScales[3], 80, 670 );
 				
 				g.setColor(Color.GREEN);
-				g.drawLine(x2, y2, x3, y3);
+				g.drawLine(scaledX, scaledY, destX, destY);
 			}
 		}
 	}
 
-	public void paintFruits() {
+	private void paintFruits() {
 		List<String> fruit = game.getFruits();
 		
 		for (int i=0; i<fruit.size(); i++) {
+			//Initialize Fruit data from JSon and paint it
 			try {
 				JSONObject obj = new JSONObject(fruit.get(i));
 				JSONObject fr = obj.getJSONObject("Fruit");
@@ -191,24 +177,24 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 				double x = Double.parseDouble(st.nextToken());
 				double y = Double.parseDouble(st.nextToken());
 				
-				int xl = (int)scale(x, ex[0], ex[1], 50, 1230);
-				int yl = (int)scale(y, ex[2], ex[3], 80, 670 );
+				int scaledX = (int)scale(x, GuiScales[0], GuiScales[1], 50, 1230);
+				int scaledY = (int)scale(y, GuiScales[2], GuiScales[3], 80, 670 );
 				
-				if (type == -1 ) { g2d.drawImage(appleI.getImage(), xl-12, yl-12, 25, 25, this); }
-				else             { g2d.drawImage(bananI.getImage(), xl-12, yl-12, 25, 25, this); }
+				if (type == -1 ) { g2d.drawImage(appleI.getImage(), scaledX-12, scaledY-12, 25, 25, this); }
+				else             { g2d.drawImage(bananI.getImage(), scaledX-12, scaledY-12, 25, 25, this); }
 				
 			}catch (Exception e) { e.printStackTrace(); }
 		}
 	}
 
-	public void paintRobots() {
+	private void paintRobots() {
 		List<String> Robot = game.getRobots();
 		
 		for (int i=0; i<Robot.size(); i++) {
+			//Initialize Robot data from JSon and paint it
 			try {
 				JSONObject obj = new JSONObject(Robot.get(i));
 				JSONObject fr = obj.getJSONObject("Robot");
-				
 				int id = fr.getInt("id");
 				String pos = fr.getString("pos");			
 				
@@ -217,14 +203,14 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 				double x = Double.parseDouble(st.nextToken());
 				double y = Double.parseDouble(st.nextToken());
 				
-				int xl = (int)scale(x, ex[0], ex[1], 50, 1230);
-				int yl = (int)scale(y, ex[2], ex[3], 80, 670 );
+				int scaledX = (int)scale(x, GuiScales[0], GuiScales[1], 50, 1230);
+				int scaledY = (int)scale(y, GuiScales[2], GuiScales[3], 80, 670 );
 					
-				g2d.drawImage(robotI.getImage(), xl-12, yl-12, 25, 25, this);
+				g2d.drawImage(robotI.getImage(), scaledX-12, scaledY-12, 25, 25, this);
 				g2d.setColor(Color.RED);
 				float font = 21.0f;
 				g2d.setFont(g2d.getFont().deriveFont(font));
-				g2d.drawString(""+id, xl-4, yl-20);
+				g2d.drawString(""+id, scaledX-4, scaledY-20);
 				
 			}catch (Exception e) { e.printStackTrace(); }
 		}
@@ -252,19 +238,6 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 		}
 	}
 
-
-
-	@Override
-	public void mouseClicked(MouseEvent e) {}
-	@Override
-	public void mousePressed(MouseEvent e) {}
-	@Override
-	public void mouseReleased(MouseEvent e) {}
-	@Override
-	public void mouseEntered(MouseEvent e) {}
-	@Override
-	public void mouseExited(MouseEvent e) {}
-
 	/**
 	 * @param data - denote some data to be scaled
 	 * @param r_min the minimum of the range of your data
@@ -278,11 +251,12 @@ public class MyGameGUI extends JFrame implements ActionListener, MouseListener, 
 		double res = ((data - r_min) / (r_max-r_min)) * (t_max - t_min) + t_min;
 		return res;
 	}
+	
 	/**
 	 * Finds the minimum and maximum x and y positions in the nodesMap to help relocating them
 	 * from google-earth coordinates to the gui window coordinates
 	 * @param n
-	 * @return - an array with the min and max values - [minX, minY, maxX, maxY]
+	 * @return - an array with the min and max values - [minX, maxX, minY, maxY]
 	 */
 	private static double[] scaleHelper(HashMap<Integer, node_data> n) {
 		double [] ans = {Double.MAX_VALUE, Double.MIN_VALUE ,Double.MAX_VALUE ,Double.MIN_VALUE};

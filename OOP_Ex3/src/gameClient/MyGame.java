@@ -250,8 +250,8 @@ public class MyGame {
 		Fruit fru = new Fruit();
 		double temp=0;
 		for(Fruit f:fru_list) {
-			if(f.getV()>temp) {
-				temp = f.getV();
+			if(f.getValue()>temp) {
+				temp = f.getValue();
 
 			}
 			fru = f;

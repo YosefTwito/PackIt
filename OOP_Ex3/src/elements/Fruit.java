@@ -3,30 +3,32 @@ package elements;
 import utils.Point3D;
 
 /**
- * this class represtents a fruit.
+ * This class represents a fruit.
  * can be a banana or apple(-1 = banana, 1 = apple).
- * we need to read data from json file and fetch it to the fruit.
+ * we need to read data from JSon file and fetch it to the fruit.
  * such:
  * where he is, his points, and the fruit itself.
  * @author YosefTwito and EldarTakach
  */
 public class Fruit {
-	double value;
-	int type;
-	Point3D pos;
+	
+	//Parameters
+	private double value;
+	private int type;
+	private Point3D pos;
 	public int from;
 	public int to;
 	
-	
+	//Constructors
+
+	public Fruit() {;}
 	
 	public Fruit(double value, int y, Point3D pos) {
 		this.value=value;
 		this.pos=pos;
 		this.type=y;
 	}
-	public Fruit() {
-		
-	}
+	
 	public Fruit(Fruit f) {
 		this.from=f.from;
 		this.to=f.to;
@@ -35,13 +37,21 @@ public class Fruit {
 		this.value=f.value;
 	}
 	
-	public void setType(int type) { this.type=type; }
-	public void setFrom(int f) {this.from=f;}
-	public void setTo(int t) {this.to=t;}
+	//Getters and Setters
+	
+	public double getValue() { return value; }
+	public void setValue(double value) { this.value = value; }
 
-	public int getType() { return this.type; }
-	public void setPos(Point3D np) { this.pos = np; }
-	public Point3D getPos() { return this.pos; }
-	public void setV(double v) { this.value=v; }
-	public double getV() { return this.value; }
+	public int getType() { return type; }
+	public void setType(int type) { this.type = type; }
+
+	public Point3D getPos() { return pos; }
+	public void setPos(Point3D pos) { this.pos = pos; }
+
+	public int getFrom() { return from; }
+	public void setFrom(int from) { this.from = from; }
+
+	public int getTo() { return to; }
+	public void setTo(int to) { this.to = to; }
+	
 }

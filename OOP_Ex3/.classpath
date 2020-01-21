@@ -15,7 +15,7 @@
 	<classpathentry kind="lib" path="jaxb-impl-2.1.17.jar"/>
 	<classpathentry kind="lib" path="jaxb-xjc-2.2.jar"/>
 	<classpathentry kind="lib" path="stax-api-1.0-2.jar"/>
-	<classpathentry kind="lib" path="GameServer_v0.32.jar"/>
 	<classpathentry kind="lib" path="mysql-connector-java-5.1.47.jar"/>
+	<classpathentry kind="lib" path="GameServer_v0.33.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
