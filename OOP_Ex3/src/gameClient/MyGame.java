@@ -315,11 +315,11 @@ public class MyGame {
 			total+=al.get(i).value;
 			ans+="Robot #:"+i+" Scored:"+al.get(i).value;
 			ans+="\n";
-			this.score=""+total;
+			
 			this.score="\n";
 		}
-		
-		this.score+="Total"+total;
+		this.score=""+total;
+		this.score+=total;
 		return ans;
 	}
 
