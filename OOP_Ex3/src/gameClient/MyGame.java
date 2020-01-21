@@ -208,16 +208,23 @@ public class MyGame {
 	}
 	
 	public List<node_data> go(graph g,int src) {
-		Fruit f = topFruit();
-		
+		Fruit f = topFruit(this.fru_list);
+		Fruit f2=null;
+		ArrayList<Fruit> tempfru = this.fru_list;
+		if(tempfru.size()>1) {
+		tempfru.remove(f);
+		f2 = topFruit(tempfru);
+		}
 		Graph_Algo ga = new Graph_Algo(g);
 		f= setFnT(f, g);
-
-			
+		
+		
 		
 		List<node_data>arr = ga.shortestPath(src, f.from);
 		arr.add(g.getNode(f.to));
-		
+		if(f2!=null) {
+			arr.addAll(ga.shortestPath(f.to, f2.to));
+		}
 
 		
 		return arr;
@@ -235,7 +242,7 @@ public class MyGame {
 		return (int)(Math.random()*k+1);
 	}
 	
-	public Fruit topFruit() {
+	public Fruit topFruit(ArrayList<Fruit> fru_list) {
 		Fruit fru = new Fruit();
 		double temp=0;
 		for(Fruit f:fru_list) {
@@ -426,9 +433,7 @@ public class MyGame {
 				for(node_data nd:temp2) {
 					
 					r.setDest(nd.getKey());
-					
-					
-					//System.out.println(temp2);
+					LoopKiller();
 					game.chooseNextEdge(r.id,r.dest);
 					
 				}
@@ -448,13 +453,17 @@ public class MyGame {
 						options[i]=""+temp.get(i).getDest();
 						
 					}
-					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go", "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
+					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go - Robot id:"+r.getID(), "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
 					int dest= tem[ryyy];
 					nextNodeManual(r, r.src, dest);
 				}
 			}
 		}
 		return robo_list;
+	}
+	private void LoopKiller() {
+		
+		
 	}
 	/**
 	 * updates the fruit list constantly while the game is running.
