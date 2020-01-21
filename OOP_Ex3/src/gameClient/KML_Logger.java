@@ -2,6 +2,8 @@ package gameClient;
 
 import de.micromata.opengis.kml.v_2_2_0.*;
 import de.micromata.opengis.kml.v_2_2_0.Icon;
+import elements.Fruit;
+import elements.Robot;
 
 import java.io.File;
 import java.text.ParseException;

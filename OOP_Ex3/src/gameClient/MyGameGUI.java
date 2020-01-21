@@ -2,12 +2,8 @@ package gameClient;
 
 import java.awt.BasicStroke;
 import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.EventQueue;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.Image;
 import java.awt.Menu;
 import java.awt.MenuBar;
 import java.awt.MenuItem;
@@ -15,298 +11,259 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
-import java.text.ParseException;
-import java.util.ArrayList;
+import java.awt.image.BufferedImage;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Timer;
+import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
+import java.util.StringTokenizer;
 
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JOptionPane;
-import javax.swing.JPanel;
+import javax.swing.JLabel;
 
-import Server.*;
+import org.json.JSONObject;
+
+import Server.game_service;
 import dataStructure.*;
-import utils.Point3D;
 
-public class MyGameGUI {
+public class MyGameGUI extends JFrame implements ActionListener, MouseListener, Runnable, Observer{
 
-	public static class Canvas extends JPanel implements ActionListener, MouseListener {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	
+	double pathW =-1;
+	List<node_data> path;
+	int [][] robotD;
+	Graphics doubleB;
+	int Level;
+	Graphics2D g2d;
 
+	ImageIcon robo = new ImageIcon("robotB.png");
+	ImageIcon robotI = new ImageIcon("robot.png");
+	ImageIcon bananI = new ImageIcon("banana.png");
+	ImageIcon appleI = new ImageIcon("apple.png");
+	ImageIcon Rocket = new ImageIcon("Rocket.png");
 
-		DGraph oldGR = new DGraph(); // for fruits location.
-		DGraph gr;
-		MyGame game;
-		double[] size;
-		int GameMode=0;
-		Robot currRbot;
-		private static KML_Logger kml=new KML_Logger();
+	double ex[];
+
+	int action=0;
+
+	Collection <node_data> nodes;
+	Collection <edge_data> edges;
+
+	graph graph;
+	game_service game;
+	MyGame myGame;
+
+	public MyGameGUI() {;}
+
+	public MyGameGUI(graph graph) {
+		InitGui();
+		this.nodes=graph.getV();
+		this.graph=graph;
+		((Observable)graph).addObserver(this);
+	}
+
+	public MyGameGUI(graph graph, game_service game, int Level, MyGame mg) {
+		InitGui();
+		this.nodes=graph.getV();
+		this.graph=graph;
+		this.myGame=mg;
+		((Observable)graph).addObserver(this);
+		this.game=game;
+		this.Level=Level;
+	}
+
+	private void InitGui() {
+		this.setSize(1280, 720);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		this.setIconImage(Rocket.getImage());
+		this.setTitle("Welcome to Pack-It !");
+
+		MenuBar menu = new MenuBar();
+
+		Menu file = new Menu("File");
+		menu.add(file);
 		
+		MenuItem item1 = new MenuItem("Get Statistics");
+		item1.addActionListener(this);
+		file.add(item1);
+
+		this.setMenuBar(menu);
 		
-		
-		
-
-		private void start_game() {
-			// Logo for options-dialog
-			ImageIcon robo = new ImageIcon("robotB.png");
-
-			// Set the game Level - [0,23]
-			String[] options = {"1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"};
-			int gameNum = JOptionPane.showOptionDialog(null, "Choose the Level you would like to display", "Click a button",
-					JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
-			if (gameNum<0) gameNum=0;//in case user don't pick and press x
-
-			// Set the game mode - Manual/Automate
-			String[] Mode = {"Automate", "Manual"};
-			int ModeNum = JOptionPane.showOptionDialog(null, "Choose the Mode you would like to display", "Click a button",
-					JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, Mode, Mode[0]);
-			if (ModeNum<0) ModeNum=0;//in case user don't pick and press x
-			GameMode = ModeNum;
-
-			//Creating new game server
-			game_service game = Game_Server.getServer(gameNum);
-
-			//Adding robots.
-			game.addRobot(0);game.addRobot(1);game.addRobot(2);game.addRobot(3);game.addRobot(4);
-			String str = game.getGraph(); // graph as string.
-			DGraph gr = new DGraph();
-			//initialize the graph from json for the game.
-			gr.init(str);
-			this.oldGR.init(str);
-			//relocate nodes to valid coordination.
-			double [] size = scaleHelper(gr.nodesMap);
-			this.size=size;
-			gr.nodesMap.forEach((k, v) -> {
-				Point3D loc = v.getLocation();
-				Point3D newL = new Point3D((int)scale(loc.x(),size[0],size[1],50,1230), (int)scale(loc.y(),size[2],size[3],70,660));
-				v.setLocation(newL);
-			});
-			this.gr=gr;
-
-			MyGame mg = new MyGame(gr, game);
-			this.game=mg;
-			//Let the Show begin
-			mg.game.startGame();
-
-			
-			
-		}
-
-		private static final long serialVersionUID = 1L;
-
-		private Image offScreenImageDrawed = null;            
-		private Timer timer = new Timer();
-
-		public Canvas() {
-			start_game();  
-			timer.schedule(new AutomataTask(), 0, 100);
-			this.setPreferredSize(new Dimension(1280, 720));
-
-		}
-
-		/** 
-		 * Use double buffering.
-		 * @see java.awt.Component#update(java.awt.Graphics)
-		 */
-		@Override
-		public void update(Graphics g) {                                
-			paint(g);
-		}
-
-		/**
-		 * Draw this generation.
-		 * @see java.awt.Component#paint(java.awt.Graphics)
-		 */
-		@Override
-		public void paint(final Graphics g) {
-
-			final Dimension d = getSize();
-			// Double-buffer: clear the offscreen image.  
-			offScreenImageDrawed=null;
-			if (offScreenImageDrawed == null) {offScreenImageDrawed = createImage(d.width, d.height);}          
-
-			/////////////////////
-			// Paint Offscreen //
-			/////////////////////
-			renderOffScreen(offScreenImageDrawed.getGraphics());
-			g.drawImage(offScreenImageDrawed, 0, 0, null);
-		}
-
-		public void renderOffScreen(final Graphics g) {
-
-			if (gr != null && gr.nodeSize()>=1) {
-				//get nodes
-				Collection<node_data> nodes = gr.getV();
-				for (node_data n : nodes) {
-					//draw nodes
-					Point3D p = n.getLocation();
-					g.setColor(Color.BLACK);
-					g.fillOval(p.ix(), p.iy(), 9, 9);
-
-					//draw nodes-key's
-					g.setColor(Color.BLUE);
-					g.drawString(""+n.getKey(), p.ix()-4, p.iy()-5);
-
-					//check if there are edges
-					if (gr.edgeSize()==0) { continue; }
-					if ((gr.getE(n.getKey())!=null)) {
-						//get edges
-						Collection<edge_data> edges = gr.getE(n.getKey());
-						for (edge_data e : edges) {
-							//draw edges
-							g.setColor(Color.GREEN);
-							((Graphics2D) g).setStroke(new BasicStroke(2,BasicStroke.CAP_ROUND,BasicStroke.JOIN_ROUND));
-							Point3D p2 = gr.getNode(e.getDest()).getLocation();
-							g.drawLine(p.ix()+5, p.iy()+5, p2.ix()+5, p2.iy()+5);
-						}	
-					}
-				}
-			}
-			if (game.fru_list != null) {
-
-				if (game.fru_list.size()>0) {
-					ArrayList<Fruit> fruL = new ArrayList<Fruit>();
-					if(fruL.addAll(game.fru_list)) {
-						for (int i=0; i<fruL.size(); i++) {
-							fruL.get(i).from = game.fruitToEdge(fruL.get(i), oldGR).getSrc();
-							fruL.get(i).to   = game.fruitToEdge(fruL.get(i), oldGR).getDest();
-						}
-					}
-					//get icons
-					ImageIcon apple = new ImageIcon("apple.png");
-					ImageIcon banana = new ImageIcon("banana.png");
-					//draw
-					int srcF, destF;
-					Point3D tempS, tempD;
-					for (int i=0; i<fruL.size(); i++) {
-						srcF = fruL.get(i).from;
-						destF = fruL.get(i).to;
-						if (fruL.get(i).getType()==-1) {
-							tempS = this.gr.getNode(srcF).getLocation();
-							tempD = this.gr.getNode(destF).getLocation();
-							g.drawImage(apple.getImage(), (int)((tempS.ix()*0.3)+(0.7*tempD.ix()))-5, (int)((tempS.iy()*0.3)+(0.7*tempD.iy()))-10, (int)((tempS.ix()*0.3)+(0.7*tempD.ix()))+15, (int)((tempS.iy()*0.3)+(0.7*tempD.iy()))+10, 0, 0, 500, 500, null);
-						}
-						else {
-							tempS = this.gr.getNode(srcF).getLocation();
-							tempD = this.gr.getNode(destF).getLocation();
-							g.drawImage(banana.getImage(), (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))-5, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))-10, (int)((tempS.ix()*0.7)+(0.3*tempD.ix()))+15, (int)((tempS.iy()*0.7)+(0.3*tempD.iy()))+10, 0, 0, 532, 470, null);
-						}
-					}
-				}
-			}
-			//draw robots
-			if (game.robo_list !=null) {
-				//get icon
-				ImageIcon robocop = new ImageIcon("robot.png");
-				if (game.robo_list.size()>0) {
-					for (int i=0; i< game.robo_list.size(); i++) {
-						//reposition to robots
-						Point3D pos = new Point3D((int)scale(game.robo_list.get(i).getPos().x(),this.size[0],this.size[1],50,1230), (int)scale(game.robo_list.get(i).getPos().y(),this.size[2],this.size[3],80,670));
-						//draw
-						g.drawImage(robocop.getImage(), pos.ix()-7, pos.iy()-18, pos.ix()+13, pos.iy()+8, 0, 0, 500, 500, null);
-
-					}
-				}
-			}
-			//Draw time-to-end and score on the screen
-			g.setColor(Color.BLACK);
-			Font font = new Font("Canterbury", Font.BOLD, 25);
-			g.setFont(font);
-			g.drawString("Time: "+game.game.timeToEnd()/1000+"      -", 470, 28);
-			g.drawString("Score: "+game.score, 643, 28);
-		}
-
-
-		private class AutomataTask extends java.util.TimerTask {
-			
-			public void run() {
-				// Run thread on event dispatching thread
-				if (game.game.isRunning()) {
-					if (!EventQueue.isDispatchThread()) {
-						EventQueue.invokeLater(this);
-					} else {
-						if (Canvas.this != null) {
-						
-							if (GameMode==1) {
-								int count=0;
-								if(count==0) {
-									String nextS = JOptionPane.showInputDialog(null,"Where would you want to move a robot ?");
-									int next = Integer.parseInt(nextS);
-									game.update();
-									for(Robot rob: game.robo_list) {
-										game.nextNodeManual(rob, rob.getSrc(), next);
-									}
-									count++;
-								}
-							}
-							else {
-								Fruit t = game.topFruit();
-								System.out.println("FROM"+t.from);
-								System.out.println("TO"+t.to);
-								game.robo_list=game.upDate(t.from,t.to);               	
-							}  
-							Canvas.this.repaint();  
-						}
-					}     
-				}
-				else {
-					JOptionPane.showMessageDialog(null, "                  Game Over ! \n           Your Score is: "+game.score);
-					try {
-						kml.make_kml(game,1);
-					} catch (ParseException | InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
-					this.cancel();
-				}
-			}
-		}
-
-
-		@Override
-		public void mouseClicked(MouseEvent e) {
-			if (GameMode==1) {
-				if(currRbot==null) {
-					for (Robot r: game.robo_list) {
-						Point3D p = new Point3D(e.getX(),e.getY());
-						if (r.pos.distance2D(p)< 15) {
-							currRbot = r;
-
-						}
-					}
-				}
-				else {
-					for (node_data n : gr.getV()) {
-						Point3D p = new Point3D(e.getX(),e.getY());
-						if (n.getLocation().distance2D(p)<15) {
-							game.nextNodeManual(currRbot, currRbot.getSrc(), n.getKey());
-						}
-					}
-				}
-			}
-		}
-
-		@Override
-		public void mousePressed(MouseEvent e) {}
-
-		@Override
-		public void mouseReleased(MouseEvent e) {}
-
-		@Override
-		public void mouseEntered(MouseEvent e) {}
-
-		@Override
-		public void mouseExited(MouseEvent e) {}
-
-		@Override
-		public void actionPerformed(ActionEvent e) {
-			// TODO Auto-generated method stub
-
-		}   
+		this.addMouseListener(this);
 
 	}
 
+	private BufferedImage buff;
+	private Graphics2D g2;
+	//private BufferedImage buff3;
+
+	JLabel background = null;
+
+	public void paint(Graphics g) {
+
+		if (buff == null || g2 == null || this.WIDTH != 1280 || this.HEIGHT != 720) {
+
+			if ((this.WIDTH != 1280 || this.HEIGHT != 720) && background != null) {
+				remove(background);
+			}
+			this.setLayout(null);
+			//sets scales for gui window
+			ex = scaleHelper(((DGraph)graph).nodesMap);
+
+			buff = new BufferedImage(1280, 720, BufferedImage.TYPE_INT_ARGB);
+			g2 = buff.createGraphics();
+			super.paint(g2);
+			paintGraph(g2);
+		}
+		g2d = (Graphics2D)g;
+		g2d.drawImage(buff, 0, 0, null);
+
+		paintRobots();
+		paintFruits();	
+
+		if (game.timeToEnd()<1000) {
+			float fontMessage = 38.0f;
+			g.setFont(g.getFont().deriveFont(fontMessage));
+			g.drawString("Game Over !", 550, 250);
+		}
+	}
+
+	public void paintGraph(Graphics g) {
+		super.paintComponents(g);
+		Graphics2D g2d = (Graphics2D)g;
+		
+		g.setColor(Color.BLACK);
+		float fontMessage = 28.0f;
+		g2d.setFont(g2d.getFont().deriveFont(fontMessage));
+		g.drawString("Score: "+myGame.Score(myGame.robo_list), 150, 80);
+		g.drawString("Time : "+game.timeToEnd()/1000, 350, 80);
+		g.drawString("Level: "+myGame.get_level(), 570, 80);
+
+
+		for (node_data n : nodes) {
+			g2d.setStroke(new BasicStroke(2));
+			float font = 14.0f;
+			g2d.setFont(g2d.getFont().deriveFont(font));
+			
+			int x = (int)scale(n.getLocation().x(), ex[0], ex[1], 50, 1230);
+			int y = (int)scale(n.getLocation().y(), ex[2], ex[3], 80, 670 );
+			
+			g.setColor(Color.BLACK);
+			g.fillOval(x-7, y-7, 14, 14);
+			g.setColor(Color.BLUE);
+			g.drawString(""+n.getKey(), x-12, y-12);
+			
+			edges = graph.getE(n.getKey());
+			if (edges == null) {continue;}
+
+			for (edge_data e : edges) {
+				
+				int x2 = (int)scale(n.getLocation().x(), ex[0], ex[1], 50, 1230);
+				int y2 = (int)scale(n.getLocation().y(), ex[2], ex[3], 80, 670 );
+				
+				int x3 = (int)scale(graph.getNode(e.getDest()).getLocation().x(), ex[0], ex[1], 50, 1230);
+				int y3 = (int)scale(graph.getNode(e.getDest()).getLocation().y(), ex[2], ex[3], 80, 670 );
+				
+				g.setColor(Color.GREEN);
+				g.drawLine(x2, y2, x3, y3);
+			}
+		}
+	}
+
+	public void paintFruits() {
+		List<String> fruit = game.getFruits();
+		
+		for (int i=0; i<fruit.size(); i++) {
+			try {
+				JSONObject obj = new JSONObject(fruit.get(i));
+				JSONObject fr = obj.getJSONObject("Fruit");
+				double type = fr.getDouble("type");
+				String pos = fr.getString("pos");
+				
+				StringTokenizer st = new StringTokenizer(pos, ",");
+				
+				double x = Double.parseDouble(st.nextToken());
+				double y = Double.parseDouble(st.nextToken());
+				
+				int xl = (int)scale(x, ex[0], ex[1], 50, 1230);
+				int yl = (int)scale(y, ex[2], ex[3], 80, 670 );
+				
+				if (type == -1 ) { g2d.drawImage(appleI.getImage(), xl-12, yl-12, 25, 25, this); }
+				else             { g2d.drawImage(bananI.getImage(), xl-12, yl-12, 25, 25, this); }
+				
+			}catch (Exception e) { e.printStackTrace(); }
+		}
+	}
+
+	public void paintRobots() {
+		List<String> Robot = game.getRobots();
+		
+		for (int i=0; i<Robot.size(); i++) {
+			try {
+				JSONObject obj = new JSONObject(Robot.get(i));
+				JSONObject fr = obj.getJSONObject("Robot");
+				
+				int id = fr.getInt("id");
+				String pos = fr.getString("pos");			
+				
+				StringTokenizer st = new StringTokenizer(pos, ",");
+				
+				double x = Double.parseDouble(st.nextToken());
+				double y = Double.parseDouble(st.nextToken());
+				
+				int xl = (int)scale(x, ex[0], ex[1], 50, 1230);
+				int yl = (int)scale(y, ex[2], ex[3], 80, 670 );
+					
+				g2d.drawImage(robotI.getImage(), xl-12, yl-12, 25, 25, this);
+				g2d.setColor(Color.RED);
+				float font = 21.0f;
+				g2d.setFont(g2d.getFont().deriveFont(font));
+				g2d.drawString(""+id, xl-4, yl-20);
+				
+			}catch (Exception e) { e.printStackTrace(); }
+		}
+	}
+
+
+	@Override
+	public void run() {
+		repaint();
+	}
+	@Override
+	public void update(Observable o, Object arg) {
+		repaint();
+		run();
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		String event = e.getActionCommand();		
+
+		switch(event) {
+
+		case "Get Statistics":
+			break;
+		}
+	}
+
+
+
+	@Override
+	public void mouseClicked(MouseEvent e) {}
+	@Override
+	public void mousePressed(MouseEvent e) {}
+	@Override
+	public void mouseReleased(MouseEvent e) {}
+	@Override
+	public void mouseEntered(MouseEvent e) {}
+	@Override
+	public void mouseExited(MouseEvent e) {}
 
 	/**
 	 * @param data - denote some data to be scaled
@@ -337,30 +294,4 @@ public class MyGameGUI {
 		});
 		return ans;
 	}
-
-	public static void main(final String [] args) {
-
-		JFrame frame = new JFrame("Hello and welcome to PackIt !") {
-			private static final long serialVersionUID = 1L;
-			public void processWindowEvent(java.awt.event.WindowEvent e) {
-				super.processWindowEvent(e);
-				if (e.getID() == java.awt.event.WindowEvent.WINDOW_CLOSING) {
-					System.exit(-1);
-				}
-			}
-		};
-		MenuBar menu = new MenuBar();
-		frame.setMenuBar(menu);
-		Menu file = new Menu("File ");
-		menu.add(file);
-		MenuItem item1 = new MenuItem("Init Original Graph");
-		file.add(item1);
-		frame.setPreferredSize(new Dimension(1280, 720));
-		frame.add(new Canvas());
-		frame.pack();
-		frame.setIconImage(new ImageIcon("Rocket.png").getImage());
-		frame.setVisible(true); 
-		
-	}
-
 }

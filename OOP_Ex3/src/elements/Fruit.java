@@ -1,4 +1,4 @@
-package gameClient;
+package elements;
 
 import utils.Point3D;
 
@@ -34,13 +34,10 @@ public class Fruit {
 		this.type=f.type;
 		this.value=f.value;
 	}
-	public void setFrom(int f) {
-		this.from=f;
-		
-	}
-	public void setTo(int t) {
-		this.to=t;
-	}
+	
+	public void setType(int type) { this.type=type; }
+	public void setFrom(int f) {this.from=f;}
+	public void setTo(int t) {this.to=t;}
 
 	public int getType() { return this.type; }
 	public void setPos(Point3D np) { this.pos = np; }

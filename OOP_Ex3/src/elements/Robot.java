@@ -1,4 +1,4 @@
-package gameClient;
+package elements;
 
 import utils.Point3D;
 

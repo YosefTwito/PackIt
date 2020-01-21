@@ -351,6 +351,9 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 		return copy;
 	}
 
+	/**
+	 * @return True if Object g is a Graph_Algo that logically equals to this
+	 */
 	public boolean equals(Object g) {
 
 		if(g instanceof Graph_Algo) {
@@ -370,8 +373,7 @@ public class Graph_Algo implements graph_algorithms, Serializable{
 				}
 			}
 		}
-
-		if(g instanceof graph ) {
+		if(g instanceof graph) {
 			Graph_Algo t = new Graph_Algo((graph) g);
 			return this.equals(t);
 		}

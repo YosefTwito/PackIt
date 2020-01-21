@@ -9,7 +9,6 @@ import java.util.Observable;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
-import gui.GraphListener;
 import utils.Point3D;
 
 public class DGraph extends Observable implements graph,Serializable{
@@ -21,7 +20,6 @@ public class DGraph extends Observable implements graph,Serializable{
 	public HashMap<Integer, HashMap<Integer,edge_data>> edgesMap = new HashMap<Integer, HashMap<Integer,edge_data>>();
 	private int edgesCounter=0;
 	private int MC=0;
-	private GraphListener listener;
 
 	//Constructor:
 	public DGraph() {
@@ -39,13 +37,9 @@ public class DGraph extends Observable implements graph,Serializable{
 		this.edgesCounter=G.edgesCounter;
 	}
 	
-	public void addListener(GraphListener listener){this.listener = listener;}
-	
-	public void updateListener(){if(listener != null)listener.graphUpdater();}
-	
 	/**
-	 * init graph from json
-	 * @param g
+	 * Initialize graph from json
+	 * @param g - String with the graph data
 	 */
 	public void init(String g) {
 		
@@ -97,17 +91,14 @@ public class DGraph extends Observable implements graph,Serializable{
 		return null;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void addNode(node_data n) {
 		int key=n.getKey();
 		this.nodesMap.put(key, (node)n);
 		this.MC++;
 		notifyObservers(n);
-		updateListener();
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public void connect(int src, int dest, double w) {
 		if (this.nodesMap.get(src)==null || this.nodesMap.get(dest)== null) {
@@ -121,14 +112,12 @@ public class DGraph extends Observable implements graph,Serializable{
 				edgesCounter++;
 				this.MC++;
 				notifyObservers();
-				updateListener();
 			}
 			else {
 				this.edgesMap.get(src).put(dest, temp);
 				edgesCounter++;
 				this.MC++;
 				notifyObservers();
-				updateListener();
 			}
 		}
 	}
@@ -146,7 +135,6 @@ public class DGraph extends Observable implements graph,Serializable{
 		return this.edgesMap.get(node_id).values(); 
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public node_data removeNode(int key) {
 
@@ -178,11 +166,9 @@ public class DGraph extends Observable implements graph,Serializable{
 		this.nodesMap.remove(key);
 		this.MC++;
 		notifyObservers();
-		updateListener();
 		return ans;
 	}
 
-	@SuppressWarnings("deprecation")
 	@Override
 	public edge_data removeEdge(int src, int dest) {
 		if (this.edgesMap.get(src).get(dest)==null) { return null; }
@@ -192,7 +178,6 @@ public class DGraph extends Observable implements graph,Serializable{
 		edgesCounter--;
 		this.MC++;
 		notifyObservers();
-		updateListener();
 		return e;
 	}
 
@@ -205,14 +190,23 @@ public class DGraph extends Observable implements graph,Serializable{
 	@Override
 	public int getMC() { return MC; }
 
-	public boolean containsN(int k) {
-		if (this.nodesMap.containsKey(k)) { return true; }
+	/**
+	 * @param key - of the node you want to find
+	 * @return True if the graph contains the node with this key
+	 */
+	public boolean containsN(int key) {
+		if (this.nodesMap.containsKey(key)) { return true; }
 		return false;
 	}
 
-	public boolean containsE(int s, int d) {
-		if (this.edgesMap.containsKey(s)) {
-			if (this.edgesMap.get(s).containsKey(d)) { return true; }
+	/**
+	 * @param src - of the edge you want to find
+	 * @param dest - of the edge you want to find
+	 * @return True if the graph contains the edge with those src and dest
+	 */
+	public boolean containsE(int src, int dest) {
+		if (this.edgesMap.containsKey(src)) {
+			if (this.edgesMap.get(src).containsKey(dest)) { return true; }
 		}
 		return false;
 	}
