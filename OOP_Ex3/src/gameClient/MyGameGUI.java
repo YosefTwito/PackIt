@@ -132,7 +132,7 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 		g.drawString("Score: "+myGame.Score(myGame.robo_list), 150, 80);
 		g.drawString("Time : "+game.timeToEnd()/1000, 350, 80);
 		g.drawString("Level: "+myGame.get_level(), 570, 80);
-		g.drawString("Moves: "+myGame.getMoves(), 670, 80);
+		g.drawString("Moves: "+myGame.getMoves(), 780, 80);
 
 		//Get and paint nodes
 		for (node_data n : nodes) {

@@ -56,9 +56,11 @@ public class MyGame {
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
-		game.addRobot(8);
-		game.addRobot(7);
+		//game.addRobot(25); 469
+		game.addRobot(11); //469
+		game.addRobot(4);
 		game.addRobot(6);
+		game.addRobot(1);
 
 		gg.init(g);
 		//we have the graph. now we need to get the robots and fruits.
@@ -108,7 +110,7 @@ public class MyGame {
 		r.setVisible(true);
 
 
-		Game_Server.login(314732637);
+		//Game_Server.login(314732637);
 
 		game.startGame();
 
@@ -123,9 +125,9 @@ public class MyGame {
 
 		}
 
-		String res = game.toString();
-		game.sendKML("kmlFile.kml");
-		System.out.println(res);
+		//String res = game.toString();
+		//game.sendKML("kmlFile.kml");
+		//System.out.println(res);
 
 		JOptionPane.showMessageDialog(null, ("           Your Score is: "+Score(this.robo_list)));
 
@@ -447,61 +449,54 @@ public class MyGame {
 
 		for(Robot r:robo_list) {
 
-
+		
 			if(r.getDest()==-1) {
 
 
-				if(mode==0) {
+				//if(mode==0) {
 					int nodetoGO = getNextNode(r, graph, fru_list);
-					List<node_data> temp2 = go(graph,r.getSrc(),r);
-					node_data temp3 = decide(graph,r.getSrc(),r);
+				//	List<node_data> temp2 = go(graph,r.getSrc(),r);
+				//	node_data temp3 = decide(graph,r.getSrc(),r);
 					game.chooseNextEdge(r.getID(), nodetoGO);
 					//					for(node_data nd:temp2) {				
 					//						r.setDest(nd.getKey());
 					//						
 					//						game.chooseNextEdge(r.getID(),r.getDest());			
 					//					}
-				}
-				else {
-
-					ImageIcon robo = new ImageIcon("robotB.png");
-
-					int size = this.graph.getE(r.getSrc()).size();
-					int [] tem = new int[size];
-					String[] options = new String[size];
-					ArrayList<edge_data> temp = new ArrayList<edge_data>();
-					temp.addAll(graph.getE(r.getSrc()));
-					for(int i=0;i<size;i++) {
-						tem[i]=temp.get(i).getDest();
-						options[i]=""+temp.get(i).getDest();
-
-					}
-					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go - Robot id:"+r.getID(), "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
-					int dest= tem[ryyy];
-					nextNodeManual(r, r.getSrc(), dest);
-				}
+				//}
+//				else {
+//
+//					ImageIcon robo = new ImageIcon("robotB.png");
+//
+//					int size = this.graph.getE(r.getSrc()).size();
+//					int [] tem = new int[size];
+//					String[] options = new String[size];
+//					ArrayList<edge_data> temp = new ArrayList<edge_data>();
+//					temp.addAll(graph.getE(r.getSrc()));
+//					for(int i=0;i<size;i++) {
+//						tem[i]=temp.get(i).getDest();
+//						options[i]=""+temp.get(i).getDest();
+//
+//					}
+//					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go - Robot id:"+r.getID(), "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
+//					int dest= tem[ryyy];
+//					nextNodeManual(r, r.getSrc(), dest);
+//				}
 
 			}
-
-
-		}
-<<<<<<< HEAD
 		
-		try {
-			Thread.sleep(sleepTime(graph, fru_list, robo_list));
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-=======
-		try {
-			Thread.sleep(69,5000);
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+
 		}
 
->>>>>>> branch 'master' of https://github.com/YosefTwito/PackIt.git
+		try {
+			//Thread.sleep(sleepTime(graph, fru_list, robo_list));
+			Thread.sleep(62);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+
 		return robo_list;
 
 	}
@@ -627,10 +622,11 @@ public class MyGame {
 		return ans.get(1).getKey();
 
 
-<<<<<<< HEAD
+
 	    }
 	  private int sleepTime(graph g,ArrayList<Fruit> arrF,ArrayList<Robot> arrR){
-	        int ans =100;
+	        int ans = 70;
+		  	//int ans =100;
 	        for (Robot rob: arrR) {
 	            for (Fruit fruit: arrF) {
 	                edge_data temp = fruitToEdge(fruit,g);
@@ -643,8 +639,6 @@ public class MyGame {
 	        return ans;
 	    }
   
-=======
+
 	}
 
->>>>>>> branch 'master' of https://github.com/YosefTwito/PackIt.git
-}
