@@ -21,7 +21,7 @@ import java.util.Locale;
 
 public class KML_Logger {
 
-	File f = new File("kmlFile.kml");
+	//File f = new File("kmlFile.kml");
 	
 	/**
 	 * converts long to string
@@ -78,7 +78,7 @@ public class KML_Logger {
         int c=0;
        
         if(mg!=null){
-
+        		
                 ArrayList<Fruit> fruit = mg.fru_list;
                 ArrayList<Robot> robots = mg.robo_list;
                 //for every robot- save its data to the file
@@ -137,6 +137,7 @@ public class KML_Logger {
                     f_t2=splitArr(fruitArr2);
                     //create time span
                     TimeSpan f_span = f_mark.createAndSetTimeSpan();
+                   
                     f_span.setBegin(f_t1);
                     f_span.setEnd(f_t2);
 

@@ -37,6 +37,7 @@ public class MyGame {
 	public String score;
 	int level;
 	private static KML_Logger kml=new KML_Logger();
+	private int moves=0;
 
 	public String getScore() {
 		return score;
@@ -44,7 +45,7 @@ public class MyGame {
 
 	public int get_level() { return this.level; }
 
-
+	public int getMoves() {return this.moves;}
 
 
 	public static void main(String[] args) {
@@ -205,6 +206,15 @@ public class MyGame {
 	}
 
 	public List<node_data> go(graph g,int src) {
+		Graph_Algo ga = new Graph_Algo(g);
+		if(this.fru_list.size()==1) {
+			Fruit f = this.fru_list.get(0);
+			List<node_data>arr = ga.shortestPath(src, f.from);
+			arr.add(g.getNode(0));
+			arr.addAll(ga.shortestPath(0, f.to));
+			return arr;
+			
+		}
 		Fruit f = topFruit(this.fru_list);
 		Fruit f2=null;
 		ArrayList<Fruit> tempfru = this.fru_list;
@@ -212,10 +222,8 @@ public class MyGame {
 			tempfru.remove(f);
 			f2 = topFruit(tempfru);
 		}
-		Graph_Algo ga = new Graph_Algo(g);
+		
 		f= setFnT(f, g);
-
-
 
 		List<node_data>arr = ga.shortestPath(src, f.from);
 		arr.add(g.getNode(f.to));
@@ -288,7 +296,7 @@ public class MyGame {
 		return this.game.stopGame();
 	}
 
-	private boolean isRunning() {
+	public boolean isRunning() {
 		return game.isRunning();
 	}
 
@@ -378,7 +386,14 @@ public class MyGame {
 
 
 
-		List<String> log = game.move();	
+		List<String> log = game.move();
+		try {
+			Thread.sleep(100);
+		} catch (InterruptedException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		moves++;
 		if(log!=null) {
 			robo_list.clear();
 			String robot_json = log.toString();
