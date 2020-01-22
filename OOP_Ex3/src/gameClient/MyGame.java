@@ -115,7 +115,7 @@ public class MyGame {
 			r.run();
 			update();
 			try {
-				kml.make_kml(this,0);
+				kml.makeKML(this,0);
 			} catch (ParseException | InterruptedException e){ e.printStackTrace(); }
 
 		}
