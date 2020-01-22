@@ -498,7 +498,7 @@ public class MyGame {
 	 * fetches the data from the server
 	 */
 	public void update() {
-
+//ok
 		fru_list.clear();
 		List<String> log = game.getFruits();
 
