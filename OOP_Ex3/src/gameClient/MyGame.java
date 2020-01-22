@@ -517,7 +517,7 @@ public class MyGame {
 	            for (Fruit fruit: arrF) {
 	                edge_data temp = fruitToEdge(fruit,g);
 	                if(temp.getSrc()==rob.getSrc() || temp.getDest()==rob.getSrc()){
-	                    return 58;
+	                    return 44;
 	                }
 	            }
 	        }
