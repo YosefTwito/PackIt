@@ -67,17 +67,7 @@ public class MyGame {
 		MyGame mg = new MyGame(gg,game,level);
 		mg.goGo(mode);
 
-		//		
-		//
-		//		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
-		//		Fruit a = mg.topFruit();
-		//		while(mg.isRunning()) {
-		//		mg.robo_list=mg.upDate();
-		//		Robot r = mg.robo_list.get(0);
-		//		System.out.println(r.pos);
-		//		for(Fruit f:mg.fru_list) System.out.println("|"+f.from);
-
-		//		}
+	
 
 	}
 	private static int getMode() {
@@ -121,12 +111,14 @@ public class MyGame {
 
 		while(game.isRunning()) {
 			this.upDate(mode);
-			r.repaint();
+			r.run();
 			update();
+			try {
+				kml.make_kml(this,0);
+			} catch (ParseException | InterruptedException e){ e.printStackTrace(); }
+
 		}
 
-		//String score = this.Score(this.robo_list);
-		//this.score=score;
 
 
 		JOptionPane.showMessageDialog(null, ("           Your Score is: "+Score(this.robo_list)));
@@ -138,6 +130,7 @@ public class MyGame {
 	 * function that parse the json and retracts robotos to array list of robots.
 	 */
 	private void fetchRobots() {	
+
 		List<String> log = game.getRobots();
 		if(log!=null) {
 			String robot_json = log.toString();
@@ -383,9 +376,7 @@ public class MyGame {
 	 */	
 	public ArrayList<Robot> upDate(int mode) {
 
-		try {
-			kml.make_kml(this,0);
-		} catch (ParseException | InterruptedException e){ e.printStackTrace(); }
+
 
 		List<String> log = game.move();	
 		if(log!=null) {

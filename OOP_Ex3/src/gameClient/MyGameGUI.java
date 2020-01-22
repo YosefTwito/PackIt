@@ -10,6 +10,7 @@ import java.awt.MenuItem;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.image.BufferedImage;
+import java.text.ParseException;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
@@ -216,9 +217,9 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 		}
 	}
 
-
 	@Override
 	public void run() {
+
 		repaint();
 	}
 	@Override
