@@ -249,7 +249,7 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		String event = e.getActionCommand();		
-
+		
 		switch(event) {
 
 		case "Show My Curr Level":
