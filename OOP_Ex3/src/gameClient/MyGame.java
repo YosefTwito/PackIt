@@ -205,7 +205,25 @@ public class MyGame {
 		return ans;
 	}
 
-	public List<node_data> go(graph g,int src) {
+	private node_data decide(graph g, int src, Robot r) {
+		Collection<edge_data> ed = g.getE(r.getSrc()); 
+		ArrayList<edge_data> edal = new ArrayList<edge_data>(); //arraylist of edges coming out of robot src
+		edal.addAll(ed);
+		Fruit f = topFruit(this.fru_list); //f is best fruit
+		
+		Graph_Algo ga = new Graph_Algo(g);
+		ArrayList<node_data> nd = new ArrayList<node_data>(); 
+		nd.addAll(ga.shortestPath(src, f.from)); // shortest path to the fruit.
+		nd.add(g.getNode(f.to));
+		for(edge_data t:edal) {
+		node_data x = g.getNode(t.getDest());
+		if(nd.contains(x)) return x;
+		}
+		return null;
+		
+	}
+
+	public List<node_data> go(graph g,int src,Robot r) {
 		Graph_Algo ga = new Graph_Algo(g);
 		if(this.fru_list.size()==1) {
 			Fruit f = this.fru_list.get(0);
@@ -215,21 +233,21 @@ public class MyGame {
 			return arr;
 			
 		}
-		Fruit f = topFruit(this.fru_list);
+		Fruit f = closeFru(r);
 		Fruit f2=null;
 		ArrayList<Fruit> tempfru = this.fru_list;
-		if(tempfru.size()>1) {
-			tempfru.remove(f);
-			f2 = topFruit(tempfru);
-		}
+//		if(tempfru.size()>1) {
+//			tempfru.remove(f);
+//			f2 = closeFru(r);
+//		}
 		
 		f= setFnT(f, g);
 
 		List<node_data>arr = ga.shortestPath(src, f.from);
 		arr.add(g.getNode(f.to));
-		if(f2!=null) {
-			arr.addAll(ga.shortestPath(f.to, f2.to));
-		}
+//		if(f2!=null) {
+//			arr.addAll(ga.shortestPath(f.to, f2.to));
+//		}
 
 
 		return arr;
@@ -431,14 +449,15 @@ public class MyGame {
 			if(r.getDest()==-1) {
 
 				if(mode==0) {
-
-					List<node_data> temp2 = go(graph,r.getSrc());
-
-					for(node_data nd:temp2) {				
-						r.setDest(nd.getKey());
-						LoopKiller();
-						game.chooseNextEdge(r.getID(),r.getDest());			
-					}
+					int nodetoGO = getNextNode(r, graph, fru_list);
+					List<node_data> temp2 = go(graph,r.getSrc(),r);
+					node_data temp3 = decide(graph,r.getSrc(),r);
+					game.chooseNextEdge(r.getID(), nodetoGO);
+//					for(node_data nd:temp2) {				
+//						r.setDest(nd.getKey());
+//						
+//						game.chooseNextEdge(r.getID(),r.getDest());			
+//					}
 				}
 				else {
 
@@ -463,9 +482,7 @@ public class MyGame {
 		return robo_list;
 	}
 
-	private void LoopKiller() {
 
-	}
 
 	/**
 	 * updates the fruit list constantly while the game is running.
@@ -501,4 +518,93 @@ public class MyGame {
 			} catch (JSONException e) { e.printStackTrace(); }
 		}
 	}
+	
+	public Fruit closeFru(Robot r) {
+		double distance=0;
+		Fruit f= null;
+		for(Fruit temp:this.fru_list) {
+			if(temp.getPos().distance3D(r.getPos())<distance)
+				distance = temp.getPos().distance3D(r.getPos());
+				f=temp;
+		}
+		return f;
+	}
+	 public int getNextNode(Robot r , graph g, List<Fruit> arr ) {
+	        Graph_Algo p = new Graph_Algo(g);
+	        edge_data temp = null;
+	        double min = Integer.MAX_VALUE;
+	        double disFromRob = 0;
+	        int whereTo=-1;
+	        int finalWhereTo =-1;
+	        for (Fruit fruit: arr) {
+	            if (fruit.getTag() == 0) {
+	                temp = fruitToEdge(fruit,g);
+	            	//temp = fruit.getFruitEdge(g, fruit);
+	                if (fruit.getType() == -1) {
+	                    if (temp.getDest() > temp.getSrc()) {
+	                        disFromRob = p.shortestPathDist(r.getSrc(), temp.getDest());
+	                        whereTo = temp.getSrc();
+	                    } else if (temp.getSrc() > temp.getDest()) {
+	                        disFromRob = p.shortestPathDist(r.getSrc(), temp.getSrc());
+	                        whereTo = temp.getDest();
+	                    }
+	                    if(r.getSrc()==temp.getSrc()) {
+	                        fruit.setTag(1);
+	                        return temp.getDest();
+	                    }
+	                    if(r.getSrc()==temp.getDest()) {
+	                        fruit.setTag(1);
+	                        return temp.getSrc();
+	                    }
+	                    if (disFromRob < min) {
+	                        min = disFromRob;
+	                        finalWhereTo = whereTo;
+	                    }
+
+	                } else if (fruit.getType() == 1) {
+	                    if (temp.getDest() < temp.getSrc()) {
+	                        disFromRob = p.shortestPathDist(r.getSrc(), temp.getDest());
+	                        whereTo = temp.getDest();
+	                    } else if (temp.getSrc() < temp.getDest()) {
+	                        disFromRob = p.shortestPathDist(r.getSrc(), temp.getSrc());
+	                        whereTo = temp.getSrc();
+	                    }
+	                    if(r.getSrc()==temp.getSrc()) {
+	                        fruit.setTag(1);
+	                        return temp.getDest();
+	                    }
+	                    if(r.getSrc()==temp.getDest()) {
+	                        fruit.setTag(1);
+	                        return temp.getSrc();
+	                    }
+	                    if (disFromRob < min) {
+	                        min = disFromRob;
+	                        finalWhereTo = whereTo;
+	                    }
+
+	                }
+
+	            }
+
+	        }
+	        System.out.println("im here");
+	        List<node_data> ans = p.shortestPath(r.getSrc(), finalWhereTo);
+	        for (Fruit fruit: arr) {
+	        	temp = fruitToEdge(fruit,g);
+	            //temp = fruit.getFruitEdge(g,fruit);
+	            if(temp.getDest()==finalWhereTo || temp.getSrc()==finalWhereTo){
+	                fruit.setTag(1);
+	                break;
+	            }
+	        }
+	        if (ans.size() == 1) {
+	            List<node_data> ans2 = p.shortestPath(r.getSrc(), (finalWhereTo + 15) % 11);
+	            System.out.println("im here 2");
+	            return ans2.get(1).getKey();
+	        }
+	        return ans.get(1).getKey();
+
+
+	    }
+  
 }

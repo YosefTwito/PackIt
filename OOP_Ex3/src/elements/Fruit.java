@@ -18,6 +18,7 @@ public class Fruit {
 	private Point3D pos;
 	public int from;
 	public int to;
+	public int tag;
 	
 	//Constructors
 
@@ -38,7 +39,8 @@ public class Fruit {
 	}
 	
 	//Getters and Setters
-	
+	public void setTag(int x) {this.tag=x;}
+	public int getTag() { return this.tag; }
 	public double getValue() { return value; }
 	public void setValue(double value) { this.value = value; }
 
