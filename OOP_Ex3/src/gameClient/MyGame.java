@@ -56,7 +56,7 @@ public class MyGame {
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
-		game.addRobot(0);
+		game.addRobot(10);
 		game.addRobot(0);
 		game.addRobot(0);
 
@@ -105,6 +105,7 @@ public class MyGame {
 
 
 	public void goGo(int mode) {
+		
 		MyGameGUI r = new MyGameGUI((DGraph)this.graph,game,7,this);
 		r.setVisible(true);
 
@@ -117,6 +118,7 @@ public class MyGame {
 			try {
 				kml.makeKML(this,0);
 			} catch (ParseException | InterruptedException e){ e.printStackTrace(); }
+			
 
 		}
 
@@ -402,20 +404,14 @@ public class MyGame {
 	 */	
 	public ArrayList<Robot> upDate(int mode) {
 
-
-
 		List<String> log = game.move();
-		try {
-			Thread.sleep(100);
-		} catch (InterruptedException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		
 		moves++;
 		if(log!=null) {
 			robo_list.clear();
 			String robot_json = log.toString();
 			try {
+			
 				JSONArray line= new JSONArray(robot_json);
 
 				for(int i=0; i< line.length();i++) {
@@ -444,9 +440,12 @@ public class MyGame {
 
 		}
 
+
 		for(Robot r:robo_list) {
 
+
 			if(r.getDest()==-1) {
+				
 
 				if(mode==0) {
 					int nodetoGO = getNextNode(r, graph, fru_list);
@@ -477,9 +476,14 @@ public class MyGame {
 					int dest= tem[ryyy];
 					nextNodeManual(r, r.getSrc(), dest);
 				}
+				
 			}
+		
 		}
+		
+
 		return robo_list;
+		
 	}
 
 
