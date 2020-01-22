@@ -56,11 +56,9 @@ public class MyGame {
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
-		//game.addRobot(25); 469
-		game.addRobot(11); //469
-		game.addRobot(4);
+		game.addRobot(8);
+		game.addRobot(7);
 		game.addRobot(6);
-		game.addRobot(1);
 
 		gg.init(g);
 		//we have the graph. now we need to get the robots and fruits.
@@ -186,7 +184,7 @@ public class MyGame {
 					double value = fru.getDouble("value");
 					int type = fru.getInt("type");
 					Fruit f = new Fruit(value,type,p);
-					f=setFnT(f,graph);
+					
 
 					fru_list.add(f);
 				}
@@ -200,7 +198,7 @@ public class MyGame {
 	 * @return the node the robot will head to
 	 */
 
-	private static int nextNode(graph g, int src) {
+	public static int nextNode(graph g, int src) {
 		int ans = -1;
 		Collection<edge_data> ee = g.getE(src);
 		Iterator<edge_data> itr = ee.iterator();
@@ -212,67 +210,8 @@ public class MyGame {
 		return ans;
 	}
 
-	private node_data decide(graph g, int src, Robot r) {
-		Collection<edge_data> ed = g.getE(r.getSrc()); 
-		ArrayList<edge_data> edal = new ArrayList<edge_data>(); //arraylist of edges coming out of robot src
-		edal.addAll(ed);
-		Fruit f = topFruit(this.fru_list); //f is best fruit
 
-		Graph_Algo ga = new Graph_Algo(g);
-		ArrayList<node_data> nd = new ArrayList<node_data>(); 
-		nd.addAll(ga.shortestPath(src, f.from)); // shortest path to the fruit.
-		nd.add(g.getNode(f.to));
-		for(edge_data t:edal) {
-			node_data x = g.getNode(t.getDest());
-			if(nd.contains(x)) return x;
-		}
-		return null;
-
-	}
-
-	public List<node_data> go(graph g,int src,Robot r) {
-		Graph_Algo ga = new Graph_Algo(g);
-		if(this.fru_list.size()==1) {
-			Fruit f = this.fru_list.get(0);
-			List<node_data>arr = ga.shortestPath(src, f.from);
-			arr.add(g.getNode(0));
-			arr.addAll(ga.shortestPath(0, f.to));
-			return arr;
-
-		}
-		Fruit f = closeFru(r);
-		Fruit f2=null;
-		ArrayList<Fruit> tempfru = this.fru_list;
-		//		if(tempfru.size()>1) {
-		//			tempfru.remove(f);
-		//			f2 = closeFru(r);
-		//		}
-
-		f= setFnT(f, g);
-
-		List<node_data>arr = ga.shortestPath(src, f.from);
-		arr.add(g.getNode(f.to));
-		//		if(f2!=null) {
-		//			arr.addAll(ga.shortestPath(f.to, f2.to));
-		//		}
-
-
-		return arr;
-
-	}
-
-	/**
-	 * calculates where is the best point to start the game from.
-	 * @return the node its best to start in
-	 */
-
-	public int startHere() {
-
-		int k = graph.nodeSize();
-		return (int)(Math.random()*k+1);
-	}
-
-	public Fruit topFruit(ArrayList<Fruit> fru_list) {
+	private Fruit topFruit(ArrayList<Fruit> fru_list) {
 		Fruit fru = new Fruit();
 		double temp=0;
 		for(Fruit f:fru_list) {
@@ -307,18 +246,6 @@ public class MyGame {
 		}
 		return ans;
 
-	}
-
-	private long timeToEnd() {
-		return this.game.timeToEnd()/1000;
-	}
-
-	private long startGame() {
-		return this.game.startGame();
-	}
-
-	private long stopGame() {
-		return this.game.stopGame();
 	}
 
 	public boolean isRunning() {
@@ -372,35 +299,8 @@ public class MyGame {
 
 		return ans;
 	}
-	public Fruit setFnT(Fruit f,graph g) {
-		Fruit ans = new Fruit();
-		ans.setType(f.getType());
-		ans.setPos(f.getPos());
-		Point3D f_p = f.getPos();
-		Collection<node_data> nd = g.getV();
-		for(node_data n:nd) {
-			Point3D ns_p = n.getLocation();
-			Collection<edge_data> ed = g.getE(n.getKey());
-			if(ed==null) continue;
-			for(edge_data e : ed) {
-				Point3D nd_p = g.getNode(e.getDest()).getLocation();
-				if((ns_p.distance3D(f_p)+f_p.distance3D(nd_p))-ns_p.distance3D(nd_p)<0.000001) {
-					ans.setFrom(e.getSrc());
-					ans.setTo(e.getDest());
-					return ans;
-				}
-			}
-		}
 
-		return ans;
 
-	}
-	public boolean close(Robot r) {
-		for(Fruit f:fru_list) {
-			if(r.getSrc()==f.from && r.getDest()==f.to) return true;
-		}
-		return false;
-	}
 
 	/**
 	 * updates the robot list constantly so the robot location and score would update
@@ -449,53 +349,52 @@ public class MyGame {
 
 		for(Robot r:robo_list) {
 
-		
+
 			if(r.getDest()==-1) {
 
 
-				//if(mode==0) {
+				if(mode==0) {
 					int nodetoGO = getNextNode(r, graph, fru_list);
-				//	List<node_data> temp2 = go(graph,r.getSrc(),r);
-				//	node_data temp3 = decide(graph,r.getSrc(),r);
+
 					game.chooseNextEdge(r.getID(), nodetoGO);
 					//					for(node_data nd:temp2) {				
 					//						r.setDest(nd.getKey());
 					//						
 					//						game.chooseNextEdge(r.getID(),r.getDest());			
 					//					}
-				//}
-//				else {
-//
-//					ImageIcon robo = new ImageIcon("robotB.png");
-//
-//					int size = this.graph.getE(r.getSrc()).size();
-//					int [] tem = new int[size];
-//					String[] options = new String[size];
-//					ArrayList<edge_data> temp = new ArrayList<edge_data>();
-//					temp.addAll(graph.getE(r.getSrc()));
-//					for(int i=0;i<size;i++) {
-//						tem[i]=temp.get(i).getDest();
-//						options[i]=""+temp.get(i).getDest();
-//
-//					}
-//					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go - Robot id:"+r.getID(), "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
-//					int dest= tem[ryyy];
-//					nextNodeManual(r, r.getSrc(), dest);
-//				}
+				}
+				else {
+
+					ImageIcon robo = new ImageIcon("robotB.png");
+
+					int size = this.graph.getE(r.getSrc()).size();
+					int [] tem = new int[size];
+					String[] options = new String[size];
+					ArrayList<edge_data> temp = new ArrayList<edge_data>();
+					temp.addAll(graph.getE(r.getSrc()));
+					for(int i=0;i<size;i++) {
+						tem[i]=temp.get(i).getDest();
+						options[i]=""+temp.get(i).getDest();
+
+					}
+					int ryyy = JOptionPane.showOptionDialog(null, "Enter node to go - Robot id:"+r.getID(), "Click", JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
+					int dest= tem[ryyy];
+					nextNodeManual(r, r.getSrc(), dest);
+				}
 
 			}
-		
+
 
 		}
 
+		
 		try {
-			//Thread.sleep(sleepTime(graph, fru_list, robo_list));
-			Thread.sleep(62);
+			Thread.sleep(sleepTime(graph, fru_list, robo_list));
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 
 		return robo_list;
 
@@ -508,7 +407,7 @@ public class MyGame {
 	 * fetches the data from the server
 	 */
 	public void update() {
-//ok
+
 		fru_list.clear();
 		List<String> log = game.getFruits();
 
@@ -530,7 +429,6 @@ public class MyGame {
 					double value = fru.getDouble("value");
 					int type = fru.getInt("type");
 					Fruit f = new Fruit(value,type,p);
-					f=setFnT(f,graph);
 					fru_list.add(f);
 
 				}
@@ -538,17 +436,7 @@ public class MyGame {
 		}
 	}
 
-	public Fruit closeFru(Robot r) {
-		double distance=0;
-		Fruit f= null;
-		for(Fruit temp:this.fru_list) {
-			if(temp.getPos().distance3D(r.getPos())<distance)
-				distance = temp.getPos().distance3D(r.getPos());
-			f=temp;
-		}
-		return f;
-	}
-	public int getNextNode(Robot r , graph g, List<Fruit> arr ) {
+	private int getNextNode(Robot r , graph g, List<Fruit> arr ) {
 		Graph_Algo p = new Graph_Algo(g);
 		edge_data temp = null;
 		double min = Integer.MAX_VALUE;
@@ -625,8 +513,7 @@ public class MyGame {
 
 	    }
 	  private int sleepTime(graph g,ArrayList<Fruit> arrF,ArrayList<Robot> arrR){
-	        int ans = 70;
-		  	//int ans =100;
+	        int ans =100;
 	        for (Robot rob: arrR) {
 	            for (Fruit fruit: arrF) {
 	                edge_data temp = fruitToEdge(fruit,g);
@@ -641,4 +528,5 @@ public class MyGame {
   
 
 	}
+
 
