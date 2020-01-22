@@ -481,7 +481,12 @@ public class MyGame {
 		
 		}
 		
-
+		try {
+			Thread.sleep(sleepTime(graph, fru_list, robo_list));
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		return robo_list;
 		
 	}
@@ -609,6 +614,19 @@ public class MyGame {
 	        return ans.get(1).getKey();
 
 
+	    }
+	  private int sleepTime(graph g,ArrayList<Fruit> arrF,ArrayList<Robot> arrR){
+	        int ans =100;
+	        for (Robot rob: arrR) {
+	            for (Fruit fruit: arrF) {
+	                edge_data temp = fruitToEdge(fruit,g);
+	                if(temp.getSrc()==rob.getSrc() || temp.getDest()==rob.getSrc()){
+	                    System.out.println("im at sleep");
+	                    return 50;
+	                }
+	            }
+	        }
+	        return ans;
 	    }
   
 }
