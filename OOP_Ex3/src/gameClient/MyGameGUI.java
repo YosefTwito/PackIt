@@ -21,6 +21,7 @@ import java.util.StringTokenizer;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 
 import org.json.JSONObject;
 
@@ -34,6 +35,11 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 	 */
 	private static final long serialVersionUID = 1L;
 
+	//Data-Base Access
+	public static final String jdbcUrl="jdbc:mysql://db-mysql-ams3-67328-do-user-4468260-0.db.ondigitalocean.com:25060/oop?useUnicode=yes&characterEncoding=UTF-8&useSSL=false";
+	public static final String jdbcUser="student";
+	public static final String jdbcUserPassword="OOP2020student";
+	
 	//Get Icons for the game
 	ImageIcon robo = new ImageIcon("robotB.png");
 	ImageIcon robotI = new ImageIcon("robot.png");
@@ -74,15 +80,26 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 
 		MenuBar menu = new MenuBar();
 
-		Menu file = new Menu("File");
+		Menu file = new Menu("Data");
 		menu.add(file);
 		
-		MenuItem item1 = new MenuItem("Get Statistics");
+		MenuItem item1 = new MenuItem("Show My Curr Level");
 		item1.addActionListener(this);
 		file.add(item1);
-
+		
+		MenuItem item2 = new MenuItem("Amount of Games I Played");
+		item2.addActionListener(this);
+		file.add(item2);
+		
+		MenuItem item3 = new MenuItem("My Best Scores");
+		item3.addActionListener(this);
+		file.add(item3);
+		
+		MenuItem item4 = new MenuItem("Show My Rank in the Class");
+		item4.addActionListener(this);
+		file.add(item4);
+		
 		this.setMenuBar(menu);
-	
 	}
 
 	private BufferedImage buff;
@@ -235,7 +252,22 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 
 		switch(event) {
 
-		case "Get Statistics":
+		case "Show My Curr Level":
+			JOptionPane.showMessageDialog(null, "My Curr Level is :", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, null);
+			break;
+			
+		case "Amount of Games I Played":
+			JOptionPane.showMessageDialog(null, "Amount of Games I Played :", "From Data-Base", JOptionPane.INFORMATION_MESSAGE,null );
+
+			break;
+			
+		case "My Best Scores":
+			JOptionPane.showMessageDialog(null, "My Best Scores :\n", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, null);
+
+			break;
+			
+		case "Show My Rank in the Class":
+			JOptionPane.showMessageDialog(null, "My Ranks in the Class :\n", "From Data-Base", JOptionPane.INFORMATION_MESSAGE,null );
 			break;
 		}
 	}

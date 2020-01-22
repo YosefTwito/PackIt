@@ -110,7 +110,7 @@ public class MyGame {
 		r.setVisible(true);
 
 
-		//Game_Server.login(314732637);
+		Game_Server.login(314732637);
 
 		game.startGame();
 
@@ -125,9 +125,9 @@ public class MyGame {
 
 		}
 
-		//String res = game.toString();
-		//game.sendKML("kmlFile.kml");
-		//System.out.println(res);
+		String res = game.toString();
+		game.sendKML("kmlFile.kml");
+		System.out.println(res);
 
 		JOptionPane.showMessageDialog(null, ("           Your Score is: "+Score(this.robo_list)));
 
