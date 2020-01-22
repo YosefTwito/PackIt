@@ -25,6 +25,7 @@ import javax.swing.JOptionPane;
 
 import org.json.JSONObject;
 
+import Server.Game_Server;
 import Server.game_service;
 import dataStructure.*;
 
@@ -46,6 +47,11 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 	ImageIcon bananI = new ImageIcon("banana.png");
 	ImageIcon appleI = new ImageIcon("apple.png");
 	ImageIcon Rocket = new ImageIcon("Rocket.png");
+	
+	//Get Icons for MenuBar
+	ImageIcon baby = new ImageIcon("baby.jpg");
+	ImageIcon lama = new ImageIcon("lama.jpeg");
+	ImageIcon wasted = new ImageIcon("wasted.jpeg");
 	
 	Graphics2D g2d;
 	
@@ -253,21 +259,25 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 		switch(event) {
 
 		case "Show My Curr Level":
-			JOptionPane.showMessageDialog(null, "My Curr Level is :", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, null);
+
+			String res = game.toString();
+			System.out.println(res);
+			
+			JOptionPane.showMessageDialog(null, "My Curr Level is :", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, baby);
 			break;
 			
 		case "Amount of Games I Played":
-			JOptionPane.showMessageDialog(null, "Amount of Games I Played :", "From Data-Base", JOptionPane.INFORMATION_MESSAGE,null );
+			JOptionPane.showMessageDialog(null, "Amount of Games I Played :", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, wasted);
 
 			break;
 			
 		case "My Best Scores":
-			JOptionPane.showMessageDialog(null, "My Best Scores :\n", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, null);
+			JOptionPane.showMessageDialog(null, "My Best Scores :\n", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, baby);
 
 			break;
 			
 		case "Show My Rank in the Class":
-			JOptionPane.showMessageDialog(null, "My Ranks in the Class :\n", "From Data-Base", JOptionPane.INFORMATION_MESSAGE,null );
+			JOptionPane.showMessageDialog(null, "My Ranks in the Class :\n", "From Data-Base", JOptionPane.INFORMATION_MESSAGE, lama);
 			break;
 		}
 	}

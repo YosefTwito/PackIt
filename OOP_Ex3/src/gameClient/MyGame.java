@@ -56,8 +56,8 @@ public class MyGame {
 		String g = game.getGraph(); // graph as string.
 
 		DGraph gg = new DGraph();
-		game.addRobot(8);
-		game.addRobot(7);
+		game.addRobot(21);
+		game.addRobot(43);
 		game.addRobot(6);
 
 		gg.init(g);
@@ -446,7 +446,6 @@ public class MyGame {
 		for (Fruit fruit: arr) {
 			if (fruit.getTag() == 0) {
 				temp = fruitToEdge(fruit,g);
-				//temp = fruit.getFruitEdge(g, fruit);
 				if (fruit.getType() == -1) {
 					if (temp.getDest() > temp.getSrc()) {
 						disFromRob = p.shortestPathDist(r.getSrc(), temp.getDest());
@@ -513,20 +512,17 @@ public class MyGame {
 
 	    }
 	  private int sleepTime(graph g,ArrayList<Fruit> arrF,ArrayList<Robot> arrR){
-	        int ans =100;
+	        int ans =80;
 	        for (Robot rob: arrR) {
 	            for (Fruit fruit: arrF) {
 	                edge_data temp = fruitToEdge(fruit,g);
 	                if(temp.getSrc()==rob.getSrc() || temp.getDest()==rob.getSrc()){
-	                    System.out.println("im at sleep");
-	                    return 50;
+	                    return 58;
 	                }
 	            }
 	        }
 	        return ans;
 	    }
-  
-
 	}
 
 

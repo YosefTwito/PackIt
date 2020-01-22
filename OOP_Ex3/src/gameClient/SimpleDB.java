@@ -38,7 +38,8 @@ public class SimpleDB {
 				Class.forName("com.mysql.jdbc.Driver");
 				Connection connection = DriverManager.getConnection(jdbcUrl, jdbcUser, jdbcUserPassword);
 				Statement statement = connection.createStatement();
-				String allCustomersQuery = "SELECT * FROM Logs;";
+				String allCustomersQuery = "SELECT * FROM Logs where userID="+314732637+";";
+				System.out.println(allCustomersQuery);
 				ResultSet resultSet = statement.executeQuery(allCustomersQuery);
 				
 				while(resultSet.next())
@@ -66,7 +67,7 @@ public class SimpleDB {
 	 */
 			public static String getKML(int id, int level) {
 				String ans = null;
-				String allCustomersQuery = "SELECT * FROM Users where userID="+id+";";
+				String allCustomersQuery = "SELECT * FROM Users where userID="+314732637+";";
 				try {
 					Class.forName("com.mysql.jdbc.Driver");
 					Connection connection = 
