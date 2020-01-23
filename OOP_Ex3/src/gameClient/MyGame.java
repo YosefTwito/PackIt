@@ -36,7 +36,7 @@ public class MyGame {
 	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 	public String score;
 	int level;
-	private static KML_Logger kml=new KML_Logger();
+	private static KML_Maker kml=new KML_Maker();
 	private int moves=0;
 
 	public String getScore() { return score; }
@@ -74,9 +74,9 @@ public class MyGame {
 		String g = game.getGraph(); 
 
 		DGraph gg = new DGraph();
-		game.addRobot(6);
-		game.addRobot(9);
-		game.addRobot(6);
+		game.addRobot(8);
+		game.addRobot(32);
+		game.addRobot(40);
 
 		gg.init(g);
 
@@ -439,18 +439,19 @@ public class MyGame {
 		edge_data temp_edge = null;
 		double min = Integer.MAX_VALUE;
 		double distFromMe = 0;
-		int whereTo=-1;
-		int finalWhereTo =-1;
+		int next=-1;
+		int decision =-1;
 		for (Fruit fruit: fru_list) {
 			if (fruit.getTag() == 0) {
 				temp_edge = fruitToEdge(fruit,g); // return the edge that the fruit is sitting on
 				if (fruit.getType() == -1) { // 
 					if (temp_edge.getDest() > temp_edge.getSrc()) {
 						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getDest()); //return the shortest path between robot and fruit
-						whereTo = temp_edge.getSrc();
-					} else if (temp_edge.getSrc() > temp_edge.getDest()) {
+						next = temp_edge.getSrc();
+					} 
+					else if (temp_edge.getSrc() > temp_edge.getDest()) {
 						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getSrc()); //return the shortest path between robot the fruit;
-						whereTo = temp_edge.getDest();
+						next = temp_edge.getDest();
 					}
 					if(r.getSrc()==temp_edge.getSrc()) {
 						fruit.setTag(1); // fruit has been visited
@@ -462,16 +463,17 @@ public class MyGame {
 					}
 					if (distFromMe < min) {
 						min = distFromMe;
-						finalWhereTo = whereTo; //sets where to go
+						decision = next; //sets where to go
 					}
 
-				} else if (fruit.getType() == 1) {
+				} 
+				else if (fruit.getType() == 1) {
 					if (temp_edge.getDest() < temp_edge.getSrc()) {
 						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getDest()); //return shortest path between robot and fruit
-						whereTo = temp_edge.getDest();
+						next = temp_edge.getDest();
 					} else if (temp_edge.getSrc() < temp_edge.getDest()) {
 						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getSrc()); //return shortest path between robot and fruit
-						whereTo = temp_edge.getSrc();
+						next = temp_edge.getSrc();
 					}
 					if(r.getSrc()==temp_edge.getSrc()) {
 						fruit.setTag(1); //fruit has been visited
@@ -483,7 +485,7 @@ public class MyGame {
 					}
 					if (distFromMe < min) {
 						min = distFromMe;
-						finalWhereTo = whereTo; // sets where to go
+						decision = next; // sets where to go
 					}
 
 				}
@@ -491,31 +493,31 @@ public class MyGame {
 			}
 
 		}
-		List<node_data> ans = ga.shortestPath(r.getSrc(), finalWhereTo); // returns shortest path between robot and the where to go
+		List<node_data> ans = ga.shortestPath(r.getSrc(), decision); // returns shortest path between robot and the where to go
 		for (Fruit fruit: fru_list) {
 			temp_edge = fruitToEdge(fruit,g); // returns the edge that the fruit is sitting on
 
-			if(temp_edge.getDest()==finalWhereTo || temp_edge.getSrc()==finalWhereTo){
+			if(temp_edge.getDest()==decision || temp_edge.getSrc()==decision){
 				fruit.setTag(1); // fruit has been visited.
 				break;
 			}
 		}
 		if (ans.size() == 1) {
-			List<node_data> ans2 = ga.shortestPath(r.getSrc(), (finalWhereTo + 15) % 11);
+			List<node_data> ans2 = ga.shortestPath(r.getSrc(), (decision + 15) % 11);
 			return ans2.get(1).getKey();
 		}
 		return ans.get(1).getKey();
 
-
+		
 
 	    }
-	  private int sleepTime(graph g,ArrayList<Fruit> arrF,ArrayList<Robot> arrR){
-	        int ans =90;
-	        for (Robot rob: arrR) {
-	            for (Fruit fruit: arrF) {
+	  private int sleepTime(graph g,ArrayList<Fruit> frulist,ArrayList<Robot> robolist){
+	        int ans =0;
+	        for (Robot rob: robolist) {
+	            for (Fruit fruit: frulist) {
 	                edge_data temp = fruitToEdge(fruit,g);
-	                if(temp.getSrc()==rob.getSrc() || temp.getDest()==rob.getSrc()){
-	                    return 65;
+	                if(temp.getDest()==rob.getSrc()||temp.getSrc()==rob.getSrc()){ // if there is a robot on edge that contains a fruit , take a nap.
+	                    return 0;
 	                }
 	            }
 	        }
