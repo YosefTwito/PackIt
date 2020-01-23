@@ -257,7 +257,7 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable, Obser
 		String event = e.getActionCommand();		
 		
 		switch(event) {
-
+		//switch
 		case "Show My Curr Level":
 
 			String res = game.toString();
