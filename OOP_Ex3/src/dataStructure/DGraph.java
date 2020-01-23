@@ -4,14 +4,13 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Observable;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
 import utils.Point3D;
 
-public class DGraph extends Observable implements graph,Serializable{
+public class DGraph implements graph,Serializable{
 
 	private static final long serialVersionUID = 1L;
 	
@@ -96,7 +95,6 @@ public class DGraph extends Observable implements graph,Serializable{
 		int key=n.getKey();
 		this.nodesMap.put(key, (node)n);
 		this.MC++;
-		notifyObservers(n);
 	}
 
 	@Override
@@ -111,13 +109,12 @@ public class DGraph extends Observable implements graph,Serializable{
 				this.edgesMap.get(src).put(dest, temp);
 				edgesCounter++;
 				this.MC++;
-				notifyObservers();
 			}
 			else {
 				this.edgesMap.get(src).put(dest, temp);
 				edgesCounter++;
 				this.MC++;
-				notifyObservers();
+
 			}
 		}
 	}
@@ -149,7 +146,6 @@ public class DGraph extends Observable implements graph,Serializable{
 				v.remove(key);
 				edgesCounter--;
 				this.MC++;
-				notifyObservers();
 				if (v.isEmpty()) {
 					toD.add(k);
 				}
@@ -165,7 +161,7 @@ public class DGraph extends Observable implements graph,Serializable{
 		//remove the key-node.
 		this.nodesMap.remove(key);
 		this.MC++;
-		notifyObservers();
+
 		return ans;
 	}
 
@@ -177,7 +173,7 @@ public class DGraph extends Observable implements graph,Serializable{
 		this.edgesMap.get(src).remove(dest);
 		edgesCounter--;
 		this.MC++;
-		notifyObservers();
+
 		return e;
 	}
 
