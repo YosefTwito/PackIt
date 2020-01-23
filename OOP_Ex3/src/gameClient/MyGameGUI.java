@@ -19,8 +19,8 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.List;
-
-
+import java.util.Observable;
+import java.util.Observer;
 import java.util.StringTokenizer;
 
 import javax.swing.ImageIcon;
@@ -33,7 +33,7 @@ import org.json.JSONObject;
 import Server.game_service;
 import dataStructure.*;
 
-public class MyGameGUI extends JFrame implements ActionListener, Runnable{
+public class MyGameGUI extends JFrame implements ActionListener, Runnable, Observer{
 
 	/**
 	 * 
@@ -85,7 +85,7 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable{
 		this.nodes=graph.getV();
 		this.graph=graph;
 		this.myGame=mg;
-
+		((Observable)graph).addObserver(this);
 		this.game=game;
 		this.Level=Level;
 	}
@@ -120,7 +120,7 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable{
 
 		this.setMenuBar(menu);
 		
-		makeStats();
+		//makeStats();
 	}
 
 	private BufferedImage buff;
@@ -261,7 +261,11 @@ public class MyGameGUI extends JFrame implements ActionListener, Runnable{
 
 		repaint();
 	}
-
+	@Override
+	public void update(Observable o, Object arg) {
+		repaint();
+		run();
+	}
 
 	@Override
 	public void actionPerformed(ActionEvent e) {

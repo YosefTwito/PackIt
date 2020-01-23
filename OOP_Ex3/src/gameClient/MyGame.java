@@ -129,7 +129,7 @@ public class MyGame {
 		r.setVisible(true);
 
 
-		Game_Server.login(314732637);
+		//Game_Server.login(314732637);
 
 		game.startGame();
 
@@ -353,13 +353,14 @@ public class MyGame {
 		for(Robot r:robo_list) {
 			if(r.getDest()==-1) {
 				if(mode==0) {
-					int nodetoGO = getNextNode(r, graph, fru_list);
+					
+					int nodetoGO = setNext(r, graph, fru_list);
 					game.chooseNextEdge(r.getID(), nodetoGO);
 					//					for(node_data nd:temp2) {				
 					//						r.setDest(nd.getKey());
 					//						
-					//						game.chooseNextEdge(r.getID(),r.getDest());			
-					//					}
+					//					game.chooseNextEdge(r.getID(),r.getDest());			
+									
 				}
 				else {
 					ImageIcon robo = new ImageIcon("robotB.png");
@@ -378,9 +379,10 @@ public class MyGame {
 					nextNodeManual(r, r.getSrc(), dest);
 				}
 			}
-		}
+	}
+		
 		try {
-			Thread.sleep(sleepTime(graph, fru_list, robo_list));
+			Thread.sleep(15);
 		} 
 		catch (InterruptedException e) {
 			e.printStackTrace();
@@ -426,6 +428,8 @@ public class MyGame {
 		}
 	}
 	
+
+	
 	/**
 	 * calculates the next node that the robot should go to 
 	 * @param r robot 
@@ -434,13 +438,16 @@ public class MyGame {
 	 * @return the key of the node
 	 */
 
-	private int getNextNode(Robot r , graph g, List<Fruit> fru_list ) {
+	private int setNext(Robot r , graph g, List<Fruit> fru_list ) {
 		Graph_Algo ga = new Graph_Algo(g);
 		edge_data temp_edge = null;
-		double min = Integer.MAX_VALUE;
-		double distFromMe = 0;
+		
 		int next=-1;
 		int decision =-1;
+		
+		double min = 9999;
+		double distFromMe = 0;
+	
 		for (Fruit fruit: fru_list) {
 			if (fruit.getTag() == 0) {
 				temp_edge = fruitToEdge(fruit,g); // return the edge that the fruit is sitting on
@@ -467,10 +474,12 @@ public class MyGame {
 					}
 
 				} 
-				else if (fruit.getType() == 1) {
+				else {
+					
 					if (temp_edge.getDest() < temp_edge.getSrc()) {
 						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getDest()); //return shortest path between robot and fruit
 						next = temp_edge.getDest();
+						
 					} else if (temp_edge.getSrc() < temp_edge.getDest()) {
 						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getSrc()); //return shortest path between robot and fruit
 						next = temp_edge.getSrc();
@@ -487,13 +496,11 @@ public class MyGame {
 						min = distFromMe;
 						decision = next; // sets where to go
 					}
-
 				}
-
 			}
-
 		}
-		List<node_data> ans = ga.shortestPath(r.getSrc(), decision); // returns shortest path between robot and the where to go
+		ArrayList<node_data> array = new ArrayList<node_data>(); 
+		array.addAll(ga.shortestPath(r.getSrc(), decision));
 		for (Fruit fruit: fru_list) {
 			temp_edge = fruitToEdge(fruit,g); // returns the edge that the fruit is sitting on
 
@@ -502,27 +509,13 @@ public class MyGame {
 				break;
 			}
 		}
-		if (ans.size() == 1) {
-			List<node_data> ans2 = ga.shortestPath(r.getSrc(), (decision + 15) % 11);
-			return ans2.get(1).getKey();
-		}
-		return ans.get(1).getKey();
+
+		return array.get(1).getKey();
 
 		
 
 	    }
-	  private int sleepTime(graph g,ArrayList<Fruit> frulist,ArrayList<Robot> robolist){
-	        int ans =0;
-	        for (Robot rob: robolist) {
-	            for (Fruit fruit: frulist) {
-	                edge_data temp = fruitToEdge(fruit,g);
-	                if(temp.getDest()==rob.getSrc()||temp.getSrc()==rob.getSrc()){ // if there is a robot on edge that contains a fruit , take a nap.
-	                    return 0;
-	                }
-	            }
-	        }
-	        return ans;
-	    }
+
 	}
 
 
