@@ -83,7 +83,7 @@ public class MyGame {
 		// Logo for options-dialog
 		ImageIcon robo = new ImageIcon("robotB.png");
 
-		// Set the game Level - [0,23]
+		//Set the game Level - [0,23]
 		String[] options = {"0","1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23"};
 		int gameNum = JOptionPane.showOptionDialog(null, "Choose the Level you would like to display", "Click a button",
 				JOptionPane.DEFAULT_OPTION, JOptionPane.INFORMATION_MESSAGE, robo, options, options[0]);
