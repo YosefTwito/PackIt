@@ -39,38 +39,57 @@ public class MyGame {
 	private static KML_Logger kml=new KML_Logger();
 	private int moves=0;
 
-	public String getScore() {
-		return score;
-	}
+	public String getScore() { return score; }
 
 	public int get_level() { return this.level; }
 
 	public int getMoves() {return this.moves;}
+	
+	public MyGame() {;}
+	
+	public MyGame(graph g,game_service game, int level) {
+		this.graph=g;
+		this.game=game;
+		this.level=level;
+		fetchRobots();
+		fetchFruits();
+	}
+	
+	
+
+	
+	/**
+	 * main driver of the game.
+	 * gets the decision of the user regard the level and mode of the game
+	 * then starts the game.
+	 * @param args
+	 */
 
 
 	public static void main(String[] args) {
 		int level = getLevel();
 		int mode = getMode();
 
-		game_service game = Game_Server.getServer(level); // this is where we get the user input too know what game to play [0,23];
-		String g = game.getGraph(); // graph as string.
+		game_service game = Game_Server.getServer(level); 
+		String g = game.getGraph(); 
 
 		DGraph gg = new DGraph();
-		game.addRobot(21);
-		game.addRobot(43);
+		game.addRobot(6);
+		game.addRobot(9);
 		game.addRobot(6);
 
 		gg.init(g);
-		//we have the graph. now we need to get the robots and fruits.
-		//after getting the fruits and robots, we need to update our graph with the location of fruits and robots.
-		//after that, we need to update our GUI with new parameters and present it.
+
 
 		MyGame mg = new MyGame(gg,game,level);
 		mg.goGo(mode);
 
-
-
 	}
+	/**
+	 * asks the user about the mode he wants to play.
+	 * Automate or Manual
+	 * @return
+	 */
 	private static int getMode() {
 		ImageIcon robo = new ImageIcon("robotB.png");
 		String[] Mode = {"Automate", "Manual"};
@@ -79,6 +98,11 @@ public class MyGame {
 		if (ModeNum<0) ModeNum=0;//in case user don't pick and press x
 		return ModeNum;
 	}
+	/**
+	 * asks the user about the level he wants to play.
+	 * [0,23]
+	 * @return
+	 */
 	private static int getLevel() {
 		// Logo for options-dialog
 		ImageIcon robo = new ImageIcon("robotB.png");
@@ -91,17 +115,14 @@ public class MyGame {
 		return gameNum;
 
 	}
+	
 
-	public MyGame(graph g,game_service game, int level) {
-		this.graph=g;
-		this.game=game;
-		this.level=level;
-		fetchRobots();
-		fetchFruits();
-	}
-	public MyGame() {;}
-
-
+	/**
+	 * logs to the server with the users ID
+	 * than initialize the game with users decisions
+	 * when game is over, generates a KML and shows score
+	 * @param mode
+	 */
 	public void goGo(int mode) {
 
 		MyGameGUI r = new MyGameGUI((DGraph)this.graph,game,7,this);
@@ -113,9 +134,9 @@ public class MyGame {
 		game.startGame();
 
 		while(game.isRunning()) {
-			this.upDate(mode);
+			this.robo_updater(mode);
 			r.run();
-			update();
+			fru_updater();
 			try {
 				kml.makeKML(this,0);
 			} catch (ParseException | InterruptedException e){ e.printStackTrace(); }
@@ -133,7 +154,7 @@ public class MyGame {
 	}
 
 	/**
-	 * function that parse the json and retracts robotos to array list of robots.
+	 * function that parse the json and builds an arraylist of robots.
 	 */
 	private void fetchRobots() {	
 
@@ -164,7 +185,7 @@ public class MyGame {
 		}
 	}
 	/**
-	 * function that parse the json and retracts the fruits to array list of fruits
+	 * function that parse the json and builds an arraylist of fruits
 	 */
 	private void fetchFruits() {
 		List<String> log = game.getFruits();
@@ -210,22 +231,9 @@ public class MyGame {
 		return ans;
 	}
 
-
-	private Fruit topFruit(ArrayList<Fruit> fru_list) {
-		Fruit fru = new Fruit();
-		double temp=0;
-		for(Fruit f:fru_list) {
-			if(f.getValue()>temp) {
-				temp = f.getValue();
-
-			}
-			fru = f;
-
-		}
-		return fru;
-	}
 	/**
 	 * checks if the robot can go to the selected node
+	 * used only in Manual mode
 	 * @param r robot
 	 * @param src node of the robot
 	 * @param dest node of the robot
@@ -247,7 +255,10 @@ public class MyGame {
 		return ans;
 
 	}
-
+	/**
+	 * checks if game is running at the moment
+	 * @return true if it is
+	 */
 	public boolean isRunning() {
 		return game.isRunning();
 	}
@@ -303,15 +314,13 @@ public class MyGame {
 
 
 	/**
-	 * updates the robot list constantly so the robot location and score would update
-	 * while the game is running.
-	 * fetches the data from the server and updates the robo list.
-	 */	
-	public ArrayList<Robot> upDate(int mode) {
-
-
+	 * updates the game data from the server while game is running
+	 * the data that is being updated is Robot pos,value, src and dest
+	 * @param mode Manual - 1 || Automate - 0
+	 * @return arraylist of robots that has been updated
+	 */
+	public ArrayList<Robot> robo_updater(int mode) {
 		List<String> log = game.move();
-
 		moves++;
 		if(log!=null) {
 			robo_list.clear();
@@ -338,24 +347,13 @@ public class MyGame {
 					Robot r = new Robot(rid,src,dest,p,val,speed);
 					robo_list.add(r);
 					r.setLast(src);
-
 				}
-
-
 			} catch (JSONException e) { e.printStackTrace(); }
-
 		}
-
-
 		for(Robot r:robo_list) {
-
-
 			if(r.getDest()==-1) {
-
-
 				if(mode==0) {
 					int nodetoGO = getNextNode(r, graph, fru_list);
-
 					game.chooseNextEdge(r.getID(), nodetoGO);
 					//					for(node_data nd:temp2) {				
 					//						r.setDest(nd.getKey());
@@ -364,9 +362,7 @@ public class MyGame {
 					//					}
 				}
 				else {
-
 					ImageIcon robo = new ImageIcon("robotB.png");
-
 					int size = this.graph.getE(r.getSrc()).size();
 					int [] tem = new int[size];
 					String[] options = new String[size];
@@ -381,32 +377,26 @@ public class MyGame {
 					int dest= tem[ryyy];
 					nextNodeManual(r, r.getSrc(), dest);
 				}
-
 			}
-
-
 		}
-
-		
 		try {
 			Thread.sleep(sleepTime(graph, fru_list, robo_list));
-		} catch (InterruptedException e) {
-			// TODO Auto-generated catch block
+		} 
+		catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-
 
 		return robo_list;
 
 	}
 
-
-
 	/**
-	 * updates the fruit list constantly while the game is running.
-	 * fetches the data from the server
+	 * updates the game data from the server while game is running
+	 * the data that is being updated is Fruit pos,value,src and dest
+	 * 
+	 * 
 	 */
-	public void update() {
+	public void fru_updater() {
 
 		fru_list.clear();
 		List<String> log = game.getFruits();
@@ -435,57 +425,65 @@ public class MyGame {
 			} catch (JSONException e) { e.printStackTrace(); }
 		}
 	}
+	
+	/**
+	 * calculates the next node that the robot should go to 
+	 * @param r robot 
+	 * @param g graph
+	 * @param fru_list arraylist of fruits
+	 * @return the key of the node
+	 */
 
-	private int getNextNode(Robot r , graph g, List<Fruit> arr ) {
-		Graph_Algo p = new Graph_Algo(g);
-		edge_data temp = null;
+	private int getNextNode(Robot r , graph g, List<Fruit> fru_list ) {
+		Graph_Algo ga = new Graph_Algo(g);
+		edge_data temp_edge = null;
 		double min = Integer.MAX_VALUE;
-		double disFromRob = 0;
+		double distFromMe = 0;
 		int whereTo=-1;
 		int finalWhereTo =-1;
-		for (Fruit fruit: arr) {
+		for (Fruit fruit: fru_list) {
 			if (fruit.getTag() == 0) {
-				temp = fruitToEdge(fruit,g);
-				if (fruit.getType() == -1) {
-					if (temp.getDest() > temp.getSrc()) {
-						disFromRob = p.shortestPathDist(r.getSrc(), temp.getDest());
-						whereTo = temp.getSrc();
-					} else if (temp.getSrc() > temp.getDest()) {
-						disFromRob = p.shortestPathDist(r.getSrc(), temp.getSrc());
-						whereTo = temp.getDest();
+				temp_edge = fruitToEdge(fruit,g); // return the edge that the fruit is sitting on
+				if (fruit.getType() == -1) { // 
+					if (temp_edge.getDest() > temp_edge.getSrc()) {
+						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getDest()); //return the shortest path between robot and fruit
+						whereTo = temp_edge.getSrc();
+					} else if (temp_edge.getSrc() > temp_edge.getDest()) {
+						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getSrc()); //return the shortest path between robot the fruit;
+						whereTo = temp_edge.getDest();
 					}
-					if(r.getSrc()==temp.getSrc()) {
-						fruit.setTag(1);
-						return temp.getDest();
+					if(r.getSrc()==temp_edge.getSrc()) {
+						fruit.setTag(1); // fruit has been visited
+						return temp_edge.getDest();
 					}
-					if(r.getSrc()==temp.getDest()) {
-						fruit.setTag(1);
-						return temp.getSrc();
+					if(r.getSrc()==temp_edge.getDest()) {
+						fruit.setTag(1); //fruit has been visited
+						return temp_edge.getSrc();
 					}
-					if (disFromRob < min) {
-						min = disFromRob;
-						finalWhereTo = whereTo;
+					if (distFromMe < min) {
+						min = distFromMe;
+						finalWhereTo = whereTo; //sets where to go
 					}
 
 				} else if (fruit.getType() == 1) {
-					if (temp.getDest() < temp.getSrc()) {
-						disFromRob = p.shortestPathDist(r.getSrc(), temp.getDest());
-						whereTo = temp.getDest();
-					} else if (temp.getSrc() < temp.getDest()) {
-						disFromRob = p.shortestPathDist(r.getSrc(), temp.getSrc());
-						whereTo = temp.getSrc();
+					if (temp_edge.getDest() < temp_edge.getSrc()) {
+						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getDest()); //return shortest path between robot and fruit
+						whereTo = temp_edge.getDest();
+					} else if (temp_edge.getSrc() < temp_edge.getDest()) {
+						distFromMe = ga.shortestPathDist(r.getSrc(), temp_edge.getSrc()); //return shortest path between robot and fruit
+						whereTo = temp_edge.getSrc();
 					}
-					if(r.getSrc()==temp.getSrc()) {
-						fruit.setTag(1);
-						return temp.getDest();
+					if(r.getSrc()==temp_edge.getSrc()) {
+						fruit.setTag(1); //fruit has been visited
+						return temp_edge.getDest();
 					}
-					if(r.getSrc()==temp.getDest()) {
-						fruit.setTag(1);
-						return temp.getSrc();
+					if(r.getSrc()==temp_edge.getDest()) {
+						fruit.setTag(1); // fruit has been visited
+						return temp_edge.getSrc();
 					}
-					if (disFromRob < min) {
-						min = disFromRob;
-						finalWhereTo = whereTo;
+					if (distFromMe < min) {
+						min = distFromMe;
+						finalWhereTo = whereTo; // sets where to go
 					}
 
 				}
@@ -493,17 +491,17 @@ public class MyGame {
 			}
 
 		}
-		List<node_data> ans = p.shortestPath(r.getSrc(), finalWhereTo);
-		for (Fruit fruit: arr) {
-			temp = fruitToEdge(fruit,g);
-			//temp = fruit.getFruitEdge(g,fruit);
-			if(temp.getDest()==finalWhereTo || temp.getSrc()==finalWhereTo){
-				fruit.setTag(1);
+		List<node_data> ans = ga.shortestPath(r.getSrc(), finalWhereTo); // returns shortest path between robot and the where to go
+		for (Fruit fruit: fru_list) {
+			temp_edge = fruitToEdge(fruit,g); // returns the edge that the fruit is sitting on
+
+			if(temp_edge.getDest()==finalWhereTo || temp_edge.getSrc()==finalWhereTo){
+				fruit.setTag(1); // fruit has been visited.
 				break;
 			}
 		}
 		if (ans.size() == 1) {
-			List<node_data> ans2 = p.shortestPath(r.getSrc(), (finalWhereTo + 15) % 11);
+			List<node_data> ans2 = ga.shortestPath(r.getSrc(), (finalWhereTo + 15) % 11);
 			return ans2.get(1).getKey();
 		}
 		return ans.get(1).getKey();
@@ -512,12 +510,12 @@ public class MyGame {
 
 	    }
 	  private int sleepTime(graph g,ArrayList<Fruit> arrF,ArrayList<Robot> arrR){
-	        int ans =80;
+	        int ans =90;
 	        for (Robot rob: arrR) {
 	            for (Fruit fruit: arrF) {
 	                edge_data temp = fruitToEdge(fruit,g);
 	                if(temp.getSrc()==rob.getSrc() || temp.getDest()==rob.getSrc()){
-	                    return 44;
+	                    return 65;
 	                }
 	            }
 	        }
