@@ -67,7 +67,7 @@ public class MyGame {
 
 
 	public static void main(String[] args) {
-		int level = getLevel();
+		int level = -31;//getLevel();
 		int mode = getMode();
 
 		game_service game = Game_Server.getServer(level); 
