@@ -36,7 +36,7 @@ public class MyGame {
 	public ArrayList<Fruit> fru_list = new ArrayList<Fruit>(); // list of fruits we have
 	public String score;
 	int level;
-	private static KML_Maker kml=new KML_Maker();
+	private static gameClient.KML_Maker kml=new gameClient.KML_Maker();
 	private int moves=0;
 
 	public String getScore() { return score; }
@@ -67,17 +67,21 @@ public class MyGame {
 
 
 	public static void main(String[] args) {
-		int level = -31;//getLevel();
+		int level =getLevel();
 		int mode = getMode();
 
 		game_service game = Game_Server.getServer(level); 
 		String g = game.getGraph(); 
 
 		DGraph gg = new DGraph();
-		game.addRobot(8);
-		game.addRobot(32);
-		game.addRobot(40);
 
+		game.addRobot(10);
+		game.addRobot(2);
+		game.addRobot(4);
+		game.addRobot(6);
+//		for(int i=0;i<10;i++) {
+//			game.addRobot(i+5);
+//		}
 		gg.init(g);
 
 
@@ -125,11 +129,11 @@ public class MyGame {
 	 */
 	public void goGo(int mode) {
 
-		MyGameGUI r = new MyGameGUI((DGraph)this.graph,game,7,this);
+		MyGameGUI r = new MyGameGUI((DGraph)this.graph,game,this.level,this);
 		r.setVisible(true);
 
 
-		//Game_Server.login(314732637);
+		Game_Server.login(314732637);
 
 		game.startGame();
 
@@ -145,7 +149,7 @@ public class MyGame {
 		}
 
 		String res = game.toString();
-		game.sendKML("kmlFile.kml");
+//		game.sendKML("KML_FILE.kml");
 		System.out.println(res);
 
 		JOptionPane.showMessageDialog(null, ("           Your Score is: "+Score(this.robo_list)));
@@ -354,7 +358,7 @@ public class MyGame {
 			if(r.getDest()==-1) {
 				if(mode==0) {
 					
-					int nodetoGO = setNext(r, graph, fru_list);
+					int nodetoGO = setNext2(r, graph, fru_list);
 					game.chooseNextEdge(r.getID(), nodetoGO);
 					//					for(node_data nd:temp2) {				
 					//						r.setDest(nd.getKey());
@@ -382,7 +386,7 @@ public class MyGame {
 	}
 		
 		try {
-			Thread.sleep(15);
+			Thread.sleep(85);
 		} 
 		catch (InterruptedException e) {
 			e.printStackTrace();
@@ -437,6 +441,94 @@ public class MyGame {
 	 * @param fru_list arraylist of fruits
 	 * @return the key of the node
 	 */
+
+	private int setNext2(Robot r,graph g,List<Fruit> fru_list){
+		Graph_Algo ga = new Graph_Algo(g);
+		edge_data temp_edge = null;
+		double value = 0;
+		int next = 0;
+		int go = 0;
+		double min = -9999;
+		double dist =0;
+
+		for(Fruit f:fru_list){
+			if(f.tag==0) {
+				temp_edge = fruitToEdge(f,g);
+				if(f.getType()==1) {
+					//if apple: go from high node to low node
+					if(temp_edge.getSrc()>temp_edge.getDest()) {
+						dist = ga.shortestPathDist(r.getSrc(),temp_edge.getSrc());
+						next = temp_edge.getDest();
+					}
+					else {
+						dist = ga.shortestPathDist(r.getSrc(),temp_edge.getDest());
+						next = temp_edge.getSrc();
+					}
+					//avoid the loop in a cool way.
+					//if you are in the fruits edge - continue on the same edge.
+					//than re-calculate.
+					if(r.getSrc()==temp_edge.getSrc()) {
+						f.setTag(1);
+						return temp_edge.getDest();
+
+					}
+					else if (r.getSrc()==temp_edge.getDest()) {
+						f.setTag(1);
+						return  temp_edge.getSrc();
+					}
+
+				}
+				if(f.getType()==-1){
+					//if its a banana- go from low to high.
+					if(temp_edge.getSrc()>temp_edge.getDest()){
+						dist=ga.shortestPathDist(r.getSrc(),temp_edge.getDest());
+						next = temp_edge.getSrc();
+					}
+					else {
+						dist = ga.shortestPathDist(r.getSrc(),temp_edge.getSrc());
+						next = temp_edge.getDest();
+					}
+					//if you are in a edge that hold a fruit.
+					//don't get stuck in a loop ;)
+					if(r.getSrc()==temp_edge.getSrc()){
+						f.setTag(1);
+						return temp_edge.getDest();
+					}
+					else if (r.getSrc()==temp_edge.getDest()) {
+						f.setTag(1);
+						return temp_edge.getSrc();
+					}
+				}
+				//do the math:
+				value = (f.getValue()-dist)/temp_edge.getWeight();
+				if(value>min) {
+					min = value;
+					go = next;
+
+				}
+
+
+
+			}
+
+		}
+
+		List<node_data> list = new ArrayList<node_data>();
+		list.addAll(ga.shortestPath(r.getSrc(),go));
+		for (Fruit fruit: fru_list) {
+			temp_edge = fruitToEdge(fruit,g); // returns the edge that the fruit is sitting on
+
+			if(temp_edge.getDest()==go || temp_edge.getSrc()==go){
+				fruit.setTag(1); // fruit has been visited.
+				break;
+			}
+		}
+
+		return list.get(1).getKey();
+
+
+
+	}
 
 	private int setNext(Robot r , graph g, List<Fruit> fru_list ) {
 		Graph_Algo ga = new Graph_Algo(g);
